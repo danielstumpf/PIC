@@ -12,7 +12,6 @@ public class CreateItem {
 		return menuitem;
 	}
 
-
 	static Menu getMenu(Shell parent, int style) {
 		Menu menu = new Menu(parent, style);
 		return menu;
