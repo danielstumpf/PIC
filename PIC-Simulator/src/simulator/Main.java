@@ -64,7 +64,6 @@ public class Main {
 		PortB.createPortBReg(left, portAComposite);
 		Stack.createStack(left);
 
-		//
 		// CreateCodeTable.createTable(leftDown,linesReadIn);
 		// CreateRegister.createTheRegister(leftUp);
 		// CreateStateRegister.initializeOnSTartOrReset();
@@ -255,7 +254,6 @@ public class Main {
 		centerDown.setLayoutData(centerDownCompFormData);
 		// centerDown.setBackground(new Color(Display.getCurrent(), new RGB(255,
 		// 0, 0)));
-
 	}
 
 	private static void createMenu(Shell parent) {
@@ -271,7 +269,7 @@ public class Main {
 			public void widgetSelected(SelectionEvent e) {
 				// Dateiinhalt in Array einlesen
 				arrayLinesReadIn = InputReader.getInput(parent);
-				FillCodeTable.inertLinesInCodeTable(arrayLinesReadIn);
+				FillCodeTable.insertInCodeTable(arrayLinesReadIn);
 			};
 		});
 

@@ -107,7 +107,6 @@ public class PortB {
 		Worker.registerInputArray[6] = newArray;
 	}
 
-	//
 	public static void binaryOfPinB(String text) {
 		// unknown text
 		System.err.println(text);
