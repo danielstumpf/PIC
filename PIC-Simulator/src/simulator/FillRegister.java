@@ -38,7 +38,7 @@ public class FillRegister {
 		table.setLinesVisible(true);
 		table.setHeaderVisible(true);
 
-		for (int i = 0; i < 9; i++) {
+		for (int i = 0; i < COLUMNS; i++) {
 			TableColumn tableColumn = new TableColumn(table, SWT.NONE);
 			tableColumn.setResizable(false);
 			if (i != 0) {

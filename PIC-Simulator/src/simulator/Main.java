@@ -7,6 +7,8 @@ import java.util.ArrayList;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
@@ -84,8 +86,7 @@ public class Main {
 
 		shell.addListener(SWT.Close, new Listener() {
 			public void handleEvent(Event e) {
-				// Worker.comport.closeComConnection();
-				// threadRunProgram.stop();
+//				 threadRunProgram.stop();
 			}
 		});
 
@@ -218,8 +219,8 @@ public class Main {
 
 		// Linkes Drittel Composite
 		left = new Composite(parent, SWT.BORDER);
-		// left.setBackground(new Color(Display.getCurrent(), new RGB(100, 100,
-		// 100)));
+//		 left.setBackground(new Color(Display.getCurrent(), new RGB(100, 100,
+//		 100)));
 		left.setLayout(new FormLayout());
 
 		FormData leftCompformData = new FormData();
