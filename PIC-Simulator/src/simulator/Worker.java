@@ -76,7 +76,7 @@ public class Worker {
 		int destination = (instructions & 0x0080) >> 7;
 		int address = (instructions & 0x007F);
 		
-		if(CreateStateRegister.statusRegItem.getText(2).equals("1")) {
+		if(CreateRegisters.statusRegItem.getText(2).equals("1")) {
 			address = 128 + address;	
 		}
 
@@ -90,10 +90,10 @@ public class Worker {
 				if((Integer.parseInt(registerInputArray[address],16) + Integer.parseInt(wHex,16)) > 255){
 					w = (Integer.parseInt(registerInputArray[address],16) + Integer.parseInt(wHex,16)) - 256;
 					//Status-Register: C
-					CreateStateRegister.statusRegItem.setText(7, "1");
+					CreateRegisters.statusRegItem.setText(7, "1");
 				} else {
 					w = Integer.parseInt(registerInputArray[address],16) + Integer.parseInt(wHex,16);
-					CreateStateRegister.statusRegItem.setText(7, "0");
+					CreateRegisters.statusRegItem.setText(7, "0");
 				}
 				wHex = Integer.toHexString(w);
 				zFlagSetter(wHex);
@@ -104,11 +104,11 @@ public class Worker {
 				if((Integer.parseInt(registerInputArray[address],16) + Integer.parseInt(wHex,16)) > 255) {
 					registerInputArray[address] = 
 							Integer.toHexString((Integer.parseInt(registerInputArray[address],16) + Integer.parseInt(wHex,16)) - 256);
-					CreateStateRegister.statusRegItem.setText(7, "1");
+					CreateRegisters.statusRegItem.setText(7, "1");
 				} else {
 					registerInputArray[address] = 
 							Integer.toHexString(Integer.parseInt(registerInputArray[address],16) + Integer.parseInt(wHex,16));
-					CreateStateRegister.statusRegItem.setText(7, "0");
+					CreateRegisters.statusRegItem.setText(7, "0");
 				}
 				zFlagSetter(registerInputArray[address]);
 				FillRegister.generalValueSetterForRegister(address, registerInputArray[address]);
@@ -341,12 +341,12 @@ public class Worker {
 				for(int u = 0; u < cAry.length-1; u++){
 					cAry[u] = cAry[u+1];
 				}
-				cAry[7] = CreateStateRegister.statusRegItem.getText(7).charAt(0);
+				cAry[7] = CreateRegisters.statusRegItem.getText(7).charAt(0);
 				String backtogether = "";
 				for(int i = 0; i < cAry.length; i++) {
 					backtogether = backtogether +cAry[i];
 				}
-				CreateStateRegister.statusRegItem.setText(7, temp+"");
+				CreateRegisters.statusRegItem.setText(7, temp+"");
 				wHex = Integer.toHexString(Integer.parseInt(backtogether,2));
 				w = Integer.parseInt(wHex,16);
 
@@ -363,12 +363,12 @@ public class Worker {
 				for(int u = 0; u < cAry.length-1; u++){
 					cAry[u] = cAry[u+1];
 				}
-				cAry[7] = CreateStateRegister.statusRegItem.getText(7).charAt(0);
+				cAry[7] = CreateRegisters.statusRegItem.getText(7).charAt(0);
 				String backtogether = "";
 				for(int i = 0; i < cAry.length; i++) {
 					backtogether = backtogether +cAry[i];
 				}
-				CreateStateRegister.statusRegItem.setText(7,temp+"");		
+				CreateRegisters.statusRegItem.setText(7,temp+"");		
 				registerInputArray[address] =  Integer.toHexString(Integer.parseInt(backtogether,2));
 				FillRegister.generalValueSetterForRegister(address, registerInputArray[address]);
 			}
@@ -390,12 +390,12 @@ public class Worker {
 				for(int u = 7; u > 0; u--){
 					cAry[u] = cAry[u-1];
 				}
-				cAry[0] = CreateStateRegister.statusRegItem.getText(7).charAt(0);
+				cAry[0] = CreateRegisters.statusRegItem.getText(7).charAt(0);
 				String backtogether = "";
 				for(int i = 0; i < cAry.length; i++) {
 					backtogether = backtogether +cAry[i];
 				}
-				CreateStateRegister.statusRegItem.setText(7, temp+"");
+				CreateRegisters.statusRegItem.setText(7, temp+"");
 				wHex = Integer.toHexString(Integer.parseInt(backtogether,2));
 				w = Integer.parseInt(wHex,16);
 			} else if(destination == 1) {
@@ -411,12 +411,12 @@ public class Worker {
 				for(int u = 7; u > 0; u--){
 					cAry[u] = cAry[u-1];
 				}
-				cAry[0] = CreateStateRegister.statusRegItem.getText(7).charAt(0);
+				cAry[0] = CreateRegisters.statusRegItem.getText(7).charAt(0);
 				String backtogether = "";
 				for(int i = 0; i < cAry.length; i++) {
 					backtogether = backtogether +cAry[i];
 				}
-				CreateStateRegister.statusRegItem.setText(7,temp+"");		
+				CreateRegisters.statusRegItem.setText(7,temp+"");		
 				registerInputArray[address] =  Integer.toHexString(Integer.parseInt(backtogether,2));
 				FillRegister.generalValueSetterForRegister(address, registerInputArray[address]);
 			}
@@ -432,10 +432,10 @@ public class Worker {
 				dcFlagSetter(Integer.parseInt(registerInputArray[address],16), w, false);
 				if((Integer.parseInt(registerInputArray[address],16)-w) < 0) { // wenn  w kleiner null (negat überlauf)
 					w = 256+(Integer.parseInt(registerInputArray[address],16)-w);
-					CreateStateRegister.statusRegItem.setText(7,"0");
+					CreateRegisters.statusRegItem.setText(7,"0");
 				} else {
 					w = Integer.parseInt(registerInputArray[address],16)-w;
-					CreateStateRegister.statusRegItem.setText(7,"1");
+					CreateRegisters.statusRegItem.setText(7,"1");
 				}
 
 				wHex = Integer.toHexString(w);
@@ -446,10 +446,10 @@ public class Worker {
 				dcFlagSetter(Integer.parseInt(registerInputArray[address],16), w, false);
 				if((Integer.parseInt(registerInputArray[address],16)-w) < 0) {
 					registerInputArray[address] = Integer.toHexString(256 + (Integer.parseInt(registerInputArray[address],16)-w));
-					CreateStateRegister.statusRegItem.setText(7,"0");
+					CreateRegisters.statusRegItem.setText(7,"0");
 				} else {
 					registerInputArray[address] = Integer.toHexString(Integer.parseInt(registerInputArray[address],16)-w);
-					CreateStateRegister.statusRegItem.setText(7,"1");
+					CreateRegisters.statusRegItem.setText(7,"1");
 				}
 
 				zFlagSetter(registerInputArray[address]);
@@ -532,7 +532,7 @@ public class Worker {
 
 					//nur wennn status
 					if(address == 3){
-						CreateStateRegister.switchStatusClear(bit);
+						CreateRegisters.switchStatusClear(bit);
 					}
 					//					if(address == 129) {
 					//						CreateStateRegister.checkOneOrZero(CreateStateRegister.optionBits[bit]);
@@ -561,10 +561,10 @@ public class Worker {
 					}
 
 					if(address == 3){
-						CreateStateRegister.switchStatusSet(bit);
+						CreateRegisters.switchStatusSet(bit);
 					}
 					if(address == 129) {
-						CreateStateRegister.checkOneOrZero(CreateStateRegister.optionBits[bit]);
+						CreateRegisters.checkOneOrZero(CreateRegisters.optionBits[bit]);
 					}
 
 					registerInputArray[address] = Integer.toHexString(Integer.parseInt(backtogether,2));
@@ -621,10 +621,10 @@ public class Worker {
 
 						if((w+literals) > 255){
 							w = (w+literals)-256;
-							CreateStateRegister.statusRegItem.setText(7,"1");
+							CreateRegisters.statusRegItem.setText(7,"1");
 						}else {
 							w = w + literals;	
-							CreateStateRegister.statusRegItem.setText(7,"0");
+							CreateRegisters.statusRegItem.setText(7,"0");
 						}
 
 						wHex = Integer.toHexString(w);
@@ -698,10 +698,10 @@ public class Worker {
 						if(literals-w < 0) {
 							registerInputArray[address] = Integer.toHexString(256 + (Integer.parseInt(registerInputArray[address],16)-w));
 							w = 256 + (literals-w);
-							CreateStateRegister.statusRegItem.setText(7,"0");
+							CreateRegisters.statusRegItem.setText(7,"0");
 						} else {
 							w = (literals - w);
-							CreateStateRegister.statusRegItem.setText(7,"1");
+							CreateRegisters.statusRegItem.setText(7,"1");
 						}
 						wHex = Integer.toHexString(w);
 						zFlagSetter(wHex);
@@ -741,7 +741,7 @@ public class Worker {
 
 						CreateCodeTable.nextStepOnClick(indexOfInstructions.toUpperCase(), linesReadIn);
 						registerInputArray[2] = indexOfInstructions.substring(2, 4);
-						registerInputArray[3] = CreateStateRegister.calculateStatus();
+						registerInputArray[3] = CreateRegisters.calculateStatus();
 						//						registerInputArray[129] = CreateStateRegister.calculateOption(CreateStateRegister.optionBits);
 						registerInputArray[129] = FillRegister.table.getItem(16).getText(2);
 						registerInputArray[5] = FillRegister.table.getItem(0).getText(6);
@@ -749,11 +749,11 @@ public class Worker {
 						registerInputArray[133] = FillRegister.table.getItem(16).getText(6);
 						registerInputArray[134] = FillRegister.table.getItem(16).getText(7);
 
-						CreateStateRegister.optionToBinary(registerInputArray[129]);
-						CreateStateRegister.intconToBinary(registerInputArray[11]);
+						CreateRegisters.optionToBinary(registerInputArray[129]);
+						CreateRegisters.intconToBinary(registerInputArray[11]);
 						registerInputArray[131] = registerInputArray[3];
 						System.err.println("pcl: " + registerInputArray[2] + "; status: " + registerInputArray[3] + "; fsr: "+registerInputArray[4]+"; count: "+ registerInputArray[12] + 
-								"; wHex: "+ wHex + "; z: " + CreateStateRegister.statusRegItem.getText(5) + "; dc: "+ CreateStateRegister.statusRegItem.getText(6) + "; c: "+ CreateStateRegister.statusRegItem.getText(7));
+								"; wHex: "+ wHex + "; z: " + CreateRegisters.statusRegItem.getText(5) + "; dc: "+ CreateRegisters.statusRegItem.getText(6) + "; c: "+ CreateRegisters.statusRegItem.getText(7));
 						System.err.println("rb: " +registerInputArray[6]);
 
 						FillRegister.generalValueSetterForRegister(3, registerInputArray[3].toUpperCase()); // Status 
@@ -762,7 +762,7 @@ public class Worker {
 						FillRegister.generalValueSetterForRegister(4, registerInputArray[4].toUpperCase()); // FSR
 						FillRegister.generalValueSetterForRegister(129, registerInputArray[129].toUpperCase());
 
-						CreateStateRegister.setStateValuesPclWFSR(registerInputArray);
+						CreateRegisters.setStateValuesPclWFSR(registerInputArray);
 
 
 
@@ -785,15 +785,15 @@ public class Worker {
 
 		if(addOrSub == true) {
 			if((Integer.parseInt(litHinten,2) + Integer.parseInt(wHinten,2)) > 15 ) {
-				CreateStateRegister.statusRegItem.setText(6,"1");
+				CreateRegisters.statusRegItem.setText(6,"1");
 			} else {
-				CreateStateRegister.statusRegItem.setText(6,"0");
+				CreateRegisters.statusRegItem.setText(6,"0");
 			}
 		} else if(addOrSub == false) {
 			if((Integer.parseInt(litHinten,2) - Integer.parseInt(wHinten,2)) < 16  && (Integer.parseInt(litHinten,2) - Integer.parseInt(wHinten,2)) != 0){
-				CreateStateRegister.statusRegItem.setText(6,"0");
+				CreateRegisters.statusRegItem.setText(6,"0");
 			} else {
-				CreateStateRegister.statusRegItem.setText(6,"1");
+				CreateRegisters.statusRegItem.setText(6,"1");
 			}
 		}
 
@@ -803,11 +803,11 @@ public class Worker {
 	public static void zFlagSetter(String givenValue) {
 		int givenValueInt = Integer.parseInt(givenValue,16);
 		if(givenValueInt == 0) {
-			CreateStateRegister.statusRegItem.setText(5,"1");
+			CreateRegisters.statusRegItem.setText(5,"1");
 		} else if(givenValue.equals("00")) {
-			CreateStateRegister.statusRegItem.setText(5,"1");
+			CreateRegisters.statusRegItem.setText(5,"1");
 		} else {
-			CreateStateRegister.statusRegItem.setText(5,"0");
+			CreateRegisters.statusRegItem.setText(5,"0");
 		}
 	}
 
@@ -871,9 +871,9 @@ public class Worker {
 	}
 	
 	public static void interruptCheck() {
-		if(Integer.parseInt(CreateStateRegister.intconBits[5]) == 1  && Integer.parseInt(CreateStateRegister.intconBits[2]) == 1) {
-			if(Integer.parseInt(CreateStateRegister.intconBits[0]) == 1) {
-				CreateStateRegister.intconBits[0] = "0";
+		if(Integer.parseInt(CreateRegisters.intconBits[5]) == 1  && Integer.parseInt(CreateRegisters.intconBits[2]) == 1) {
+			if(Integer.parseInt(CreateRegisters.intconBits[0]) == 1) {
+				CreateRegisters.intconBits[0] = "0";
 			}
 		}
 	}

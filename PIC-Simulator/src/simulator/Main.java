@@ -39,6 +39,7 @@ public class Main {
 	static boolean running;
 
 	public static void main(String[] args) {
+		// Programmeinstieg, Erstellen des Fensters
 		Display display = new Display();
 		Shell shell = new Shell(display);
 		shell.setText("PIC-Simulator");
@@ -46,19 +47,25 @@ public class Main {
 		shell.setLayout(new FormLayout());
 		shell.setLayoutData(new FormData(100, 100));
 
+		// Listener für Größenveränderung des Fensters.
+		// Wird Fenstergröße verändert, wird layoutTables() aufgerufen
 		shell.addListener(SWT.Resize, new Listener() {
 			public void handleEvent(Event e) {
 				layoutTables();
 			}
 		});
-
+		// Erstellen des Menüs, Fenster(Shell) wird übergeben
 		createMenu(shell);
+		// Composites erstellen (Aufteilung im Fenster)
 		createComposites(shell);
+		// Buttons erstellen
 		createButtons(false);
+		// Tabellenn erstellen
 		createTables();
 
-		CreateStateRegister.initializeOnSTartOrReset();
-		CreateStateRegister.createAllStates(centerDown);
+		// Register mit Ausgangsdaten befüllen
+		CreateRegisters.initializeOnStartOrReset();
+		CreateRegisters.createAllStates(centerDown);
 
 		Composite portAComposite = PortA.createPortAReg(left);
 		PortB.createPortBReg(left, portAComposite);

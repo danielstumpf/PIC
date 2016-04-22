@@ -23,7 +23,7 @@ import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 
-public class CreateStateRegister {
+public class CreateRegisters {
 	private static final int REG_COLUMN_WIDTH = 80;
 	static Label valueOfPclLabel;
 	static Label valueOfPcLabel;
@@ -51,8 +51,14 @@ public class CreateStateRegister {
 	static Label optionRegHexValue;
 	static Label intconRegHexValue;
 
+	/**
+	 * @param tabSpecComposite
+	 * Erstellung der Tabellen für Spezialregister, Statusregister, Optionsregister, Intcon-Register
+	 * Formatierung jeweils über FormData
+	 * 
+	 */
 	public static void createAllStates(Composite tabSpecComposite) {
-
+		// Spezialregister, Beschriftung und Tabelle erstellen
 		Label specRegLabel = new Label(tabSpecComposite, SWT.NONE);
 		FormData specRegLabelData = new FormData();
 		specRegLabelData.top = new FormAttachment(0, 3);
@@ -93,6 +99,7 @@ public class CreateStateRegister {
 		itemRegPCName.setText(0, "PC");
 		itemRegPCName.setText(1, "0000");
 
+		// Status-Register, Beschriftung und Tabelle erstellen
 		// TODO *Status Register (03h, 83h) LABELS
 		Label statusRegLabel = new Label(tabSpecComposite, SWT.NONE);
 		FormData statusRegLabelData = new FormData();
@@ -111,51 +118,62 @@ public class CreateStateRegister {
 		statusRegData.bottom = new FormAttachment(30);
 		statusRegTable.setLayoutData(statusRegData);
 
+		// Tabellenspalte für "IRP-Bit"
 		TableColumn statusIRPColumn = new TableColumn(statusRegTable, SWT.NONE);
 		statusIRPColumn.setResizable(false);
 		statusIRPColumn.setWidth(REG_COLUMN_WIDTH);
 		statusIRPColumn.setText("IRP");
 
+		// Tabellenspalte für "RP1-Bit"
 		TableColumn statusRP1Column = new TableColumn(statusRegTable, SWT.NONE);
 		statusRP1Column.setResizable(false);
 		statusRP1Column.setWidth(REG_COLUMN_WIDTH);
 		statusRP1Column.setText("RP1");
 
+		// Tabellenspalte für "RP0-Bit"
 		TableColumn statusRP0Column = new TableColumn(statusRegTable, SWT.NONE);
 		statusRP0Column.setResizable(false);
 		statusRP0Column.setWidth(REG_COLUMN_WIDTH);
 		statusRP0Column.setText("RP0");
 
+		// Tabellenspalte für "P0-Bit"
 		TableColumn statusT0Column = new TableColumn(statusRegTable, SWT.NONE);
 		statusT0Column.setResizable(false);
 		statusT0Column.setWidth(REG_COLUMN_WIDTH);
 		statusT0Column.setText("T0");
 
+		// Tabellenspalte für "PD-Bit"
 		TableColumn statusPDColumn = new TableColumn(statusRegTable, SWT.NONE);
 		statusPDColumn.setResizable(false);
 		statusPDColumn.setWidth(REG_COLUMN_WIDTH);
 		statusPDColumn.setText("PD");
 
+		// Tabellenspalte für "Z-Bit"
 		TableColumn statusZColumn = new TableColumn(statusRegTable, SWT.NONE);
 		statusZColumn.setResizable(false);
 		statusZColumn.setWidth(REG_COLUMN_WIDTH);
 		statusZColumn.setText("Z");
 
+		// Tabellenspalte für "DC-Bit"
 		TableColumn statusDCColumn = new TableColumn(statusRegTable, SWT.NONE);
 		statusDCColumn.setResizable(false);
 		statusDCColumn.setWidth(REG_COLUMN_WIDTH);
 		statusDCColumn.setText("DC");
 
+		// Tabellenspalte für "C-Bit"
 		TableColumn statusCColumn = new TableColumn(statusRegTable, SWT.NONE);
 		statusCColumn.setResizable(false);
 		statusCColumn.setWidth(REG_COLUMN_WIDTH);
 		statusCColumn.setText("C");
 
+		// Befüllen des Inhalts der Tabelle mit "0"
 		statusRegItem = new TableItem(statusRegTable, SWT.NONE);
 		for (int i = 0; i < 8; i++) {
 			statusRegItem.setText(i, "0");
 		}
 
+		
+		//
 		statusRegTable.addListener(SWT.MouseDoubleClick, new Listener() {
 			public void handleEvent(Event event) {
 				Point pt = new Point(event.x, event.y);
@@ -490,7 +508,11 @@ public class CreateStateRegister {
 		statusRegItem.setText(bits, "0");
 	}
 
-	public static void initializeOnSTartOrReset() {
+	/**
+	 * Befüllung der Speichertabelle mit Inititalwerten
+	 * Bei Start oder Reset werden die Werte des Speichers gesetzt
+	 */
+	public static void initializeOnStartOrReset() {
 		FillRegister.table.getItem(0).setText(4, "18");
 		FillRegister.table.getItem(0).setText(6, "80");
 		FillRegister.table.getItem(0).setText(7, "80");

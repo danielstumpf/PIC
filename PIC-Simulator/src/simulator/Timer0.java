@@ -26,14 +26,14 @@ public class Timer0 {
 	}
 
 	public static void workWithTimer0() {
-		if(Integer.parseInt(CreateStateRegister.optionBits[2]) == 1) { // wenn true, RA. wenn false, 1/4Pic Quarz
+		if(Integer.parseInt(CreateRegisters.optionBits[2]) == 1) { // wenn true, RA. wenn false, 1/4Pic Quarz
 			raActiv = true; // was mit ra machen
 		} else {
-			double freq = Math.round(CreateStateRegister.currentQuarzDouble/4*1000)/1000.0; // 1/4 quarzfreq.
+			double freq = Math.round(CreateRegisters.currentQuarzDouble/4*1000)/1000.0; // 1/4 quarzfreq.
 			System.err.println(freq);
 		}
 
-		if(Integer.parseInt(CreateStateRegister.optionBits[3]) == 1) { // timer immer bei wechsel von RA4 von 1 zu 0 erhöhen
+		if(Integer.parseInt(CreateRegisters.optionBits[3]) == 1) { // timer immer bei wechsel von RA4 von 1 zu 0 erhöhen
 			if(ra4OneToZero == true) {
 				Worker.registerInputArray[1] = Integer.toHexString(Integer.parseInt(Worker.registerInputArray[1],16)+ 1).toUpperCase(); // timer0 holen
 			} 
@@ -47,13 +47,13 @@ public class Timer0 {
 		}
 
 		//check PSA -> vorerst nur für timer0 (1 = ohne vorteiler, 0 = mit Vorteiler)
-		if(Integer.parseInt(CreateStateRegister.optionBits[4]) == 1) {
+		if(Integer.parseInt(CreateRegisters.optionBits[4]) == 1) {
 			// vorteiler für wdt, vorerst uninteressant
 		} else {
 			// vorteiler für timer0
 		}
 
-		int psaValueOnlyForChangeDetect = timer0PS2PS1PS0(Integer.parseInt(CreateStateRegister.optionBits[5]), Integer.parseInt(CreateStateRegister.optionBits[6]), Integer.parseInt(CreateStateRegister.optionBits[7]));
+		int psaValueOnlyForChangeDetect = timer0PS2PS1PS0(Integer.parseInt(CreateRegisters.optionBits[5]), Integer.parseInt(CreateRegisters.optionBits[6]), Integer.parseInt(CreateRegisters.optionBits[7]));
 
 		
 		if(festerWert == psaValueOnlyForChangeDetect) { // wenn beide werte gleich
@@ -70,10 +70,10 @@ public class Timer0 {
 				if((Integer.parseInt(Worker.registerInputArray[1],16)+1) >255) {
 					Worker.registerInputArray[1] = "00";
 					FillRegister.generalValueSetterForRegister(1, "00");
-					CreateStateRegister.intconBits[5] = "1";
+					CreateRegisters.intconBits[5] = "1";
 					Worker.interruptCheck();
-					CreateStateRegister.calculateIntcon();
-					CreateStateRegister.intconToBinary(FillRegister.table.getItem(1).getText(4));
+					CreateRegisters.calculateIntcon();
+					CreateRegisters.intconToBinary(FillRegister.table.getItem(1).getText(4));
 					Worker.registerInputArray[11] = FillRegister.table.getItem(1).getText(4);
 					
 				} else {

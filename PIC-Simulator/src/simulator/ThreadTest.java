@@ -9,7 +9,7 @@ public class ThreadTest extends Thread{
 		Runnable r = new Runnable(){
 			public void run(){
 				Worker.workWithWorker(Main.arrayLinesReadIn);
-				CreateStateRegister.setLaufzeit(Worker.cyclesInMicroSeconds*CreateStateRegister.currentQuarzDouble);
+				CreateRegisters.setLaufzeit(Worker.cyclesInMicroSeconds*CreateRegisters.currentQuarzDouble);
 			}
 		};
 		while (Main.running) {

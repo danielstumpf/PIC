@@ -79,16 +79,16 @@ public class FillRegister {
 										Worker.registerInputArray[itemToDecimal] = item.getText(column).toUpperCase();
 
 										if (itemToDecimal == 3) {
-											CreateStateRegister.statusRegHexValue.setText(item.getText());
-											CreateStateRegister.statusToBinary(text.getText());
+											CreateRegisters.statusRegHexValue.setText(item.getText());
+											CreateRegisters.statusToBinary(text.getText());
 										}
 										if (itemToDecimal == 129) {
-											CreateStateRegister.optionRegHexValue.setText(text.getText());
-											CreateStateRegister.optionToBinary(text.getText());
+											CreateRegisters.optionRegHexValue.setText(text.getText());
+											CreateRegisters.optionToBinary(text.getText());
 										}
 										if (itemToDecimal == 11) {
-											CreateStateRegister.intconRegHexValue.setText(text.getText());
-											CreateStateRegister.intconToBinary(text.getText());
+											CreateRegisters.intconRegHexValue.setText(text.getText());
+											CreateRegisters.intconToBinary(text.getText());
 										}
 										if (itemToDecimal == 133) {
 											PortA.binaryOfTrisA(text.getText());
@@ -120,16 +120,16 @@ public class FillRegister {
 													.toUpperCase();
 
 											if (itemToDecimal == 3) {
-												CreateStateRegister.statusRegHexValue.setText(text.getText());
-												CreateStateRegister.statusToBinary(text.getText());
+												CreateRegisters.statusRegHexValue.setText(text.getText());
+												CreateRegisters.statusToBinary(text.getText());
 											}
 											if (itemToDecimal == 129) {
-												CreateStateRegister.optionRegHexValue.setText(text.getText());
-												CreateStateRegister.optionToBinary(text.getText());
+												CreateRegisters.optionRegHexValue.setText(text.getText());
+												CreateRegisters.optionToBinary(text.getText());
 											}
 											if (itemToDecimal == 11) {
-												CreateStateRegister.intconRegHexValue.setText(text.getText());
-												CreateStateRegister.intconToBinary(text.getText());
+												CreateRegisters.intconRegHexValue.setText(text.getText());
+												CreateRegisters.intconToBinary(text.getText());
 											}
 											if (itemToDecimal == 133) {
 												PortA.binaryOfTrisA(text.getText());
