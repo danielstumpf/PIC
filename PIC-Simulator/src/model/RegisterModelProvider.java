@@ -5,7 +5,6 @@ import java.util.ArrayList;
 public enum RegisterModelProvider {
 	INSTANCE;
 
-	private static final int COLUMNS = 8;
 	private static final int ROWS = 32;
 
 	private RegisterModelProvider() {

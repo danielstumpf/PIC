@@ -10,6 +10,7 @@ import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
+import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
@@ -53,8 +54,9 @@ public class CreateRegisters {
 
 	/**
 	 * @param tabSpecComposite
-	 * Erstellung der Tabellen für Spezialregister, Statusregister, Optionsregister, Intcon-Register
-	 * Formatierung jeweils über FormData
+	 *            Erstellung der Tabellen für Spezialregister, Statusregister,
+	 *            Optionsregister, Intcon-Register Formatierung jeweils über
+	 *            FormData
 	 * 
 	 */
 	public static void createAllStates(Composite tabSpecComposite) {
@@ -172,7 +174,6 @@ public class CreateRegisters {
 			statusRegItem.setText(i, "0");
 		}
 
-		
 		//
 		statusRegTable.addListener(SWT.MouseDoubleClick, new Listener() {
 			public void handleEvent(Event event) {
@@ -375,7 +376,12 @@ public class CreateRegisters {
 		intconRegHexValue.setLayoutData(intconLabelData);
 		intconRegHexValue.setText("00");
 
+		Group attachGroup = createQuarzFreqGroup(tabSpecComposite);
+		createRuntimeGroup(tabSpecComposite, attachGroup);
+
 		calculateStatus();
+		calculateOption();
+		calculateIntcon();
 	}
 
 	public static String calculateIntcon() {
@@ -509,8 +515,8 @@ public class CreateRegisters {
 	}
 
 	/**
-	 * Befüllung der Speichertabelle mit Inititalwerten
-	 * Bei Start oder Reset werden die Werte des Speichers gesetzt
+	 * Befüllung der Speichertabelle mit Inititalwerten Bei Start oder Reset
+	 * werden die Werte des Speichers gesetzt
 	 */
 	public static void initializeOnStartOrReset() {
 		FillRegister.table.getItem(0).setText(4, "18");
@@ -552,43 +558,63 @@ public class CreateRegisters {
 		}
 	}
 
-	public static void createRuntimeGroup(Composite rightUp) {
-		Group group = new Group(rightUp, SWT.NONE);
-		group.setLayout(new GridLayout());
-		group.setLayoutData(new GridData(SWT.LEFT, SWT.FILL, false, false));
+	public static void createRuntimeGroup(Composite parent, Group attachGroup) {
+		Group group = new Group(parent, SWT.NONE);
+		group.setLayout(new FormLayout());
+		FormData groupData = new FormData();
+		groupData.top = new FormAttachment(attachGroup, 5);
+		groupData.width = 250;
+		groupData.right = new FormAttachment(100, -5);
+		group.setLayoutData(groupData);
 		group.setText("Laufzeit");
-
-		laufzeitVal = new Label(group, SWT.NONE);
-		laufzeitVal.setText("0.00" + "µs");
-		laufzeitVal.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
 
 		setBackRuntime = new Button(group, SWT.PUSH);
 		setBackRuntime.setText("Zurücksetzen");
-		setBackRuntime.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, false, false));
+		FormData buttonData = new FormData();
+		buttonData.bottom = new FormAttachment(100, -3);
+		buttonData.left = new FormAttachment(0, 3);
+		setBackRuntime.setLayoutData(buttonData);
 		setBackRuntime.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
 				laufzeitVal.setText("0.00" + "µs");
 				laufzeitVal.update();
 			}
 		});
+		laufzeitVal = new Label(group, SWT.NONE);
+		laufzeitVal.setText("0.00" + "µs");
+		FormData labelFormData = new FormData();
+		labelFormData.left = new FormAttachment(0, 3);
+		labelFormData.bottom = new FormAttachment(setBackRuntime, -3);
+		laufzeitVal.setLayoutData(labelFormData);
 	}
 
-	public static void createQuarzFreqGroup(Composite rightUp) {
-		Group group = new Group(rightUp, SWT.NONE);
-		group.setLayout(new GridLayout());
-		group.setLayoutData(new GridData(SWT.LEFT, SWT.FILL, false, false));
+	public static Group createQuarzFreqGroup(Composite parent) {
+		Group group = new Group(parent, SWT.NONE);
+		group.setLayout(new FormLayout());
+		FormData groupFormData = new FormData();
+		groupFormData.top = new FormAttachment(0, 5);
+		groupFormData.height = 100;
+		groupFormData.width = 250;
+		groupFormData.right = new FormAttachment(100, -5);
+
+		group.setLayoutData(groupFormData);
 		group.setText("Quarzfrequenz");
 
-		createQUarzFrequenz(group);
+		createQuarzFrequenz(group);
 
 		// Combo combo = new Combo(group, SWT.DROP_DOWN | SWT.READ_ONLY);
 		// combo.setLayout(new GridLayout());
 		// combo.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 		quarzFreqVal = new Label(group, SWT.NONE);
-		quarzFreqVal.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+		FormData labelFormData = new FormData();
+		labelFormData.left = new FormAttachment(0, 3);
+		labelFormData.bottom = new FormAttachment(100, -3);
+		quarzFreqVal.setLayoutData(labelFormData);
 		quarzFreqVal.setText("1.000µs");
 		quarzSaver();
 		setComboInput();
+
+		return group;
 		// combo.setItems(arry);
 		// combo.select(8);
 		// combo.addSelectionListener(new SelectionAdapter() {
@@ -632,7 +658,6 @@ public class CreateRegisters {
 		quarzFinder.put("32.000000", "0.125");
 		quarzFinder.put("40.000000", "0.100");
 		quarzFinder.put("80.000000", "50.000"); // MHz - ns
-
 	}
 
 	public static void setComboInput() {
@@ -666,9 +691,12 @@ public class CreateRegisters {
 		quarzSaver();
 	}
 
-	public static void createQUarzFrequenz(Group group) {
+	public static void createQuarzFrequenz(Group group) {
 		Text text = new Text(group, SWT.NONE);
-		text.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+		FormData formData = new FormData();
+		formData.top = new FormAttachment(0, 5);
+		formData.left = new FormAttachment(0, 5);
+		text.setLayoutData(formData);
 		text.setMessage("4,000000");
 		text.addListener(SWT.FocusOut | SWT.Traverse, new Listener() {
 
@@ -687,6 +715,5 @@ public class CreateRegisters {
 				}
 			}
 		});
-
 	}
 }
