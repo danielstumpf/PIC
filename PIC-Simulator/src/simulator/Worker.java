@@ -739,7 +739,7 @@ public class Worker {
 							cyclesInMicroSeconds = 2;
 						}
 
-						CreateCodeTable.nextStepOnClick(indexOfInstructions.toUpperCase(), linesReadIn);
+						FillCodeTable.nextStepOnClick(indexOfInstructions.toUpperCase(), linesReadIn);
 						registerInputArray[2] = indexOfInstructions.substring(2, 4);
 						registerInputArray[3] = CreateRegisters.calculateStatus();
 						//						registerInputArray[129] = CreateStateRegister.calculateOption(CreateStateRegister.optionBits);

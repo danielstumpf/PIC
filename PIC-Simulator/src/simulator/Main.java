@@ -42,6 +42,7 @@ public class Main {
 	static Button runOnCLick;
 	static Button reset;
 	static boolean running;
+	protected static ThreadTest threadRunProgram;
 
 	public static void main(String[] args) {
 		// Programmeinstieg, Erstellen des Fensters
@@ -118,6 +119,8 @@ public class Main {
 		FillCodeTable.createTable(centerUp);
 	}
 
+	
+
 	public static void createButtons(Table attachTable) {
 		Composite buttonComposite = new Composite(centerDown, SWT.NONE);
 		buttonComposite.setLayout(new FormLayout());
@@ -183,8 +186,8 @@ public class Main {
 				} else {
 					running = true;
 				}
-				// threadRunProgram = new ThreadTest();
-				// threadRunProgram.start();
+				 threadRunProgram = new ThreadTest();
+				 threadRunProgram.start();
 			}
 		});
 		setButtons(false);

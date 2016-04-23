@@ -62,6 +62,25 @@ public class FillCodeTable {
 			}
 		}	
 	}
+	
+	public static void breakpointCheck(int i) {
+		if(getButtoList.get(i).getSelection() == true) {
+			Main.running = false;
+		}
+
+}
+	
+	public static void nextStepOnClick(String indexOFSelection, ArrayList<String> linesReadIn) {
+		for(int i = 0; i < linesReadIn.size(); i++) {
+			if(linesReadIn.get(i).substring(0, 4).contains(indexOFSelection)) {
+				codeTable.setSelection(i);
+				breakpointCheck(i);
+				break;
+			}
+		}
+
+	}
+	
 
 	public static void layoutTable(Rectangle bounds) {
 		// TODO Auto-generated method stub

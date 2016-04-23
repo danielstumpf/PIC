@@ -26,11 +26,6 @@ import org.eclipse.swt.widgets.Text;
 
 public class CreateRegisters {
 	private static final int REG_COLUMN_WIDTH = 80;
-	static Label valueOfPclLabel;
-	static Label valueOfPcLabel;
-	static Label valueOfW;
-	static String valueOfWHex;
-	static Label valueOfFSR;
 	static Label laufzeitVal;
 	static Label quarzFreqVal;
 	static Button setBackRuntime;
@@ -51,13 +46,18 @@ public class CreateRegisters {
 	static Label statusRegHexValue;
 	static Label optionRegHexValue;
 	static Label intconRegHexValue;
+	private static TableItem itemRegFSR;
+	private static TableItem itemRegPCL;
+	private static TableItem itemRegPC;
+	private static TableItem itemRegW;
+	private static Table specRegTable;
 
 	/**
 	 * @param tabSpecComposite
 	 *            Erstellung der Tabellen für Spezialregister, Statusregister,
 	 *            Optionsregister, Intcon-Register Formatierung jeweils über
 	 *            FormData
-	 * @return 
+	 * @return
 	 * 
 	 */
 	public static Table createAllStates(Composite tabSpecComposite) {
@@ -69,7 +69,7 @@ public class CreateRegisters {
 		specRegLabel.setLayoutData(specRegLabelData);
 		specRegLabel.setText("Spezialregister");
 
-		Table specRegTable = new Table(tabSpecComposite, SWT.BORDER);
+		specRegTable = new Table(tabSpecComposite, SWT.BORDER);
 		specRegTable.setHeaderVisible(true);
 		specRegTable.setHeaderVisible(false);
 		FormData specTableData = new FormData();
@@ -89,18 +89,18 @@ public class CreateRegisters {
 		specValueColumn.setWidth(150);
 		specValueColumn.setText("Wert");
 
-		TableItem itemRegWName = new TableItem(specRegTable, SWT.NONE);
-		itemRegWName.setText(0, "W");
-		itemRegWName.setText(1, "00" + "(" + "00" + "h)");
-		TableItem itemRegFSRName = new TableItem(specRegTable, SWT.NONE);
-		itemRegFSRName.setText(0, "FSR");
-		itemRegFSRName.setText(1, "00" + "h");
-		TableItem itemRegPCLName = new TableItem(specRegTable, SWT.NONE);
-		itemRegPCLName.setText(0, "PCL");
-		itemRegPCLName.setText(1, "00" + "h");
-		TableItem itemRegPCName = new TableItem(specRegTable, SWT.NONE);
-		itemRegPCName.setText(0, "PC");
-		itemRegPCName.setText(1, "0000");
+		itemRegW = new TableItem(specRegTable, SWT.NONE);
+		itemRegW.setText(0, "W");
+		itemRegW.setText(1, "00" + "(" + "00" + "h)");
+		itemRegFSR = new TableItem(specRegTable, SWT.NONE);
+		itemRegFSR.setText(0, "FSR");
+		itemRegFSR.setText(1, "00" + "h");
+		itemRegPCL = new TableItem(specRegTable, SWT.NONE);
+		itemRegPCL.setText(0, "PCL");
+		itemRegPCL.setText(1, "00" + "h");
+		itemRegPC = new TableItem(specRegTable, SWT.NONE);
+		itemRegPC.setText(0, "PC");
+		itemRegPC.setText(1, "0000");
 
 		// Status-Register, Beschriftung und Tabelle erstellen
 		// TODO *Status Register (03h, 83h) LABELS
@@ -531,15 +531,16 @@ public class CreateRegisters {
 	}
 
 	public static void setStateValuesPclWFSR(String[] registerAllValuesParent) {
-		valueOfFSR.setText(registerAllValuesParent[4].toUpperCase() + "h");
+		itemRegFSR.setText(1, registerAllValuesParent[4].toUpperCase() + "h");
 		if (Worker.w == 0) {
-			valueOfW.setText("00" + "(00h)");
+			itemRegW.setText(1, "00" + "(00h)");
 		} else {
-			valueOfW.setText(Worker.w + "(" + Worker.wHex.toUpperCase() + "h)");
-			valueOfW.update();
+			itemRegW.setText(1, Worker.w + "(" + Worker.wHex.toUpperCase() + "h)");
 		}
-		valueOfPclLabel.setText(registerAllValuesParent[2].toUpperCase() + "h");
-		valueOfPcLabel.setText("00" + registerAllValuesParent[2].toUpperCase());
+		itemRegPCL.setText(1, registerAllValuesParent[2].toUpperCase() + "h");
+		itemRegPC.setText(1, "00" + registerAllValuesParent[2].toUpperCase());
+		specRegTable.update();
+		specRegTable.layout();
 	}
 
 	public static void setLaufzeit(double neValue) {
@@ -553,7 +554,7 @@ public class CreateRegisters {
 	public static void setOrClearOnReset() {
 		optionToBinary("FF");
 		if (Worker.instructionsString.equals("0000")
-				|| Integer.parseInt(valueOfPcLabel.getText().substring(2, 4).toUpperCase(), 16) <= 0) {
+				|| Integer.parseInt(itemRegPC.getText(1).substring(2, 4).toUpperCase(), 16) <= 0) {
 
 		} else {
 			setStateValuesPclWFSR(Worker.registerInputArray);
