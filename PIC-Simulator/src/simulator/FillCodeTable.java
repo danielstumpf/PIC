@@ -36,7 +36,7 @@ public class FillCodeTable {
 		textColumn.setWidth(1000);
 	}
 
-	public static void inertLinesInCodeTable(ArrayList<String> arrayLinesReadIn) {
+	public static void insertLines(ArrayList<String> arrayLinesReadIn) {
 		for(int i = 0; i < arrayLinesReadIn.size(); i++) {
 			TableItem item = new TableItem(codeTable, SWT.NONE);
 			TableEditor editor = new TableEditor(codeTable);

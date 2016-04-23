@@ -2,7 +2,7 @@ package simulator;
 
 import org.eclipse.swt.widgets.Display;
 
-public class ThreadTest extends Thread{
+public class RunThread extends Thread{
 
 	public void run() {
 

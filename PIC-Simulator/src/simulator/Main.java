@@ -26,8 +26,6 @@ import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Table;
 
-import model.Register;
-
 public class Main {
 
 	private static Composite left;
@@ -42,7 +40,7 @@ public class Main {
 	static Button runOnCLick;
 	static Button reset;
 	static boolean running;
-	protected static ThreadTest threadRunProgram;
+	protected static RunThread threadRunProgram;
 
 	public static void main(String[] args) {
 		// Programmeinstieg, Erstellen des Fensters
@@ -141,7 +139,7 @@ public class Main {
 			public void widgetSelected(SelectionEvent e) {
 				FillRegister.setRegOnReset();
 				CreateRegisters.setOrClearOnReset();
-				FillCodeTable.codeTable.select(CreateCodeTable.startValue);
+				FillCodeTable.codeTable.select(FillCodeTable.startValue);
 				FillCodeTable.codeTable.showSelection();
 				Worker.clearallVariablesOnReset();
 			}
@@ -186,7 +184,7 @@ public class Main {
 				} else {
 					running = true;
 				}
-				 threadRunProgram = new ThreadTest();
+				 threadRunProgram = new RunThread();
 				 threadRunProgram.start();
 			}
 		});
@@ -273,7 +271,7 @@ public class Main {
 			public void widgetSelected(SelectionEvent e) {
 				// Dateiinhalt in Array einlesen
 				arrayLinesReadIn = InputReader.getInput(parent);
-				FillCodeTable.inertLinesInCodeTable(arrayLinesReadIn);
+				FillCodeTable.insertLines(arrayLinesReadIn);
 				setButtons(true);
 			};
 		});

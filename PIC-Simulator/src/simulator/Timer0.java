@@ -21,7 +21,6 @@ public class Timer0 {
 
 		} else {
 			workWithTimer0();
-
 		}
 	}
 
