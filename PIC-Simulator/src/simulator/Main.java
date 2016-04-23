@@ -13,6 +13,8 @@ import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.program.Program;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
@@ -22,6 +24,8 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.Table;
+
 import model.Register;
 
 public class Main {
@@ -31,7 +35,6 @@ public class Main {
 	private static Composite right;
 	static Composite centerDown;
 	private static Composite menuComp;
-	protected static boolean comportSelected;
 	protected static ArrayList<String> arrayLinesReadIn;
 
 	static Button nextStepObnClick;
@@ -60,14 +63,14 @@ public class Main {
 		createMenu(shell);
 		// Composites erstellen (Aufteilung im Fenster)
 		createComposites(shell);
-		// Buttons erstellen
-		createButtons(false);
 		// Tabellenn erstellen
 		createTables();
 
 		// Register mit Ausgangsdaten befüllen
 		CreateRegisters.initializeOnStartOrReset();
-		CreateRegisters.createAllStates(centerDown);
+		Table specRegAttachTable = CreateRegisters.createAllStates(centerDown);
+		// Buttons erstellen
+		createButtons(specRegAttachTable);
 
 		Composite portAComposite = PortA.createPortAReg(left);
 		PortB.createPortBReg(left, portAComposite);
@@ -86,7 +89,7 @@ public class Main {
 
 		shell.addListener(SWT.Close, new Listener() {
 			public void handleEvent(Event e) {
-//				 threadRunProgram.stop();
+				// threadRunProgram.stop();
 			}
 		});
 
@@ -108,7 +111,6 @@ public class Main {
 		PortA.layoutTable(boundsLeft);
 		PortB.layoutTable(boundsLeft);
 		Stack.layoutTable(boundsLeft);
-
 	}
 
 	private static void createTables() {
@@ -116,96 +118,85 @@ public class Main {
 		FillCodeTable.createTable(centerUp);
 	}
 
-	public static void createButtons(boolean flagForEnable) {
-		Button button = new Button(menuComp, SWT.PUSH);
-		button.setText("KLICK");
-		button.setLayoutData(new FormData());
-		button.addSelectionListener(new SelectionAdapter() {
-			public void widgetSelected(SelectionEvent e) {
-				Register.setValue(5, 12);
+	public static void createButtons(Table attachTable) {
+		Composite buttonComposite = new Composite(centerDown, SWT.NONE);
+		buttonComposite.setLayout(new FormLayout());
+		FormData buttonCompData = new FormData();
+		buttonCompData.bottom = new FormAttachment(100, -5);
+		buttonCompData.left = new FormAttachment(0, 5);
+		buttonCompData.right = new FormAttachment(20, -3);
+		buttonCompData.top = new FormAttachment(attachTable, 5);
+		buttonComposite.setLayoutData(buttonCompData);
 
-				FillRegister.viewer.refresh();
-				FillRegister.viewer.getTable().layout();
+		reset = new Button(buttonComposite, SWT.PUSH);
+		reset.setText("Reset");
+		FormData resButtonData = new FormData();
+		resButtonData.top = new FormAttachment(0, 3);
+		resButtonData.left = new FormAttachment(0, 3);
+		reset.setLayoutData(resButtonData);
+		reset.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent e) {
+				FillRegister.setRegOnReset();
+				CreateRegisters.setOrClearOnReset();
+				FillCodeTable.codeTable.select(CreateCodeTable.startValue);
+				FillCodeTable.codeTable.showSelection();
+				Worker.clearallVariablesOnReset();
 			}
 		});
 
-		// Composite buttonComposite = new Composite(right, SWT.NONE);
-		// buttonComposite.setLayout(new GridLayout());
-		// buttonComposite.setLayoutData(new GridData(SWT.LEFT, SWT.FILL, true,
-		// true));
-		//
-		// Button comport = new Button(right, SWT.CHECK);
-		// comport.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
-		// comport.setText("Activate COM 3");
-		// comport.addSelectionListener(new SelectionAdapter() {
-		// public void widgetSelected(SelectionEvent e) {
-		//
-		//
-		// if(comportSelected == false){
-		// comportSelected = true;
-		// } else {
-		// comportSelected = false;
-		// }
-		// }
-		// });
-		//
-		// reset = new Button(buttonComposite, SWT.PUSH);
-		// reset.setText("Reset");
-		// reset.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
-		// reset.addSelectionListener(new SelectionAdapter() {
-		// public void widgetSelected(SelectionEvent e) {
-		//// CreateRegister.setRegOnReset();
-		//// CreateStateRegister.setOrClearOnReset();
-		//// CreateCodeTable.testTable.select(CreateCodeTable.startValue);
-		//// CreateCodeTable.testTable.showSelection();
-		//// Worker.clearallVariablesOnReset();
-		// }
-		// });
-		// reset.setEnabled(flagForEnable);
-		//
-		// nextStepObnClick = new Button(buttonComposite, SWT.PUSH);
-		// nextStepObnClick.setText("Step");
-		// nextStepObnClick.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true,
-		// false));
-		// nextStepObnClick.addSelectionListener(new SelectionAdapter() {
-		// public void widgetSelected(SelectionEvent e) {
-		//// Worker.workWithWorker(linesReadIn);
-		//// CreateStateRegister.setLaufzeit(Worker.cyclesInMicroSeconds*CreateStateRegister.currentQuarzDouble);
-		// }
-		// });
-		// nextStepObnClick.setEnabled(flagForEnable);
-		//
-		//
-		// stopBtn = new Button(buttonComposite, SWT.PUSH);
-		// stopBtn.setText("Pause");
-		// stopBtn.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
-		// stopBtn.addSelectionListener(new SelectionAdapter() {
-		// public void widgetSelected(SelectionEvent e) {
-		// //TODO stop Btn
-		// running = false;
-		// }
-		// });
-		// stopBtn.setEnabled(flagForEnable);
-		//
-		//
-		// runOnCLick = new Button(buttonComposite, SWT.PUSH);
-		// runOnCLick.setText("Run");
-		// runOnCLick.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true,
-		// false));
-		// runOnCLick.addSelectionListener(new SelectionAdapter() {
-		// public void widgetSelected(SelectionEvent e) {
-		// if(running) {
-		// running = false;
-		// } else {
-		// running = true;
-		// }
-		//// threadRunProgram = new ThreadTest();
-		//// threadRunProgram.start();
-		// }
-		// });
-		// runOnCLick.setEnabled(flagForEnable);
+		nextStepObnClick = new Button(buttonComposite, SWT.PUSH);
+		nextStepObnClick.setText("Step");
+		FormData nxtStepBtnData = new FormData();
+		nxtStepBtnData.top = new FormAttachment(reset, 3);
+		nxtStepBtnData.left = new FormAttachment(0, 3);
+		nextStepObnClick.setLayoutData(nxtStepBtnData);
+		nextStepObnClick.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent e) {
+				Worker.workWithWorker(arrayLinesReadIn);
+				CreateRegisters.setLaufzeit(Worker.cyclesInMicroSeconds * CreateRegisters.currentQuarzDouble);
+			}
+		});
+
+		stopBtn = new Button(buttonComposite, SWT.PUSH);
+		stopBtn.setText("Pause");
+		FormData stopBtnData = new FormData();
+		stopBtnData.top = new FormAttachment(nextStepObnClick, 3);
+		stopBtnData.left = new FormAttachment(0, 3);
+		stopBtn.setLayoutData(stopBtnData);
+		stopBtn.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent e) {
+				// TODO stop Btn
+				running = false;
+			}
+		});
+
+		runOnCLick = new Button(buttonComposite, SWT.PUSH);
+		runOnCLick.setText("Run");
+		FormData runBtnData = new FormData();
+		runBtnData.top = new FormAttachment(stopBtn, 3);
+		runBtnData.left = new FormAttachment(0, 3);
+		runOnCLick.setLayoutData(runBtnData);
+		runOnCLick.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent e) {
+				if (running) {
+					running = false;
+				} else {
+					running = true;
+				}
+				// threadRunProgram = new ThreadTest();
+				// threadRunProgram.start();
+			}
+		});
+		setButtons(false);
 	}
 
+	static void setButtons(boolean flag){
+		nextStepObnClick.setEnabled(flag);
+		stopBtn.setEnabled(flag);
+		runOnCLick.setEnabled(flag);
+		reset.setEnabled(flag);
+	};
+	
 	private static void createComposites(Shell parent) {
 		// Menü oben Composite
 		menuComp = new Composite(parent, SWT.BORDER);
@@ -219,8 +210,8 @@ public class Main {
 
 		// Linkes Drittel Composite
 		left = new Composite(parent, SWT.BORDER);
-//		 left.setBackground(new Color(Display.getCurrent(), new RGB(100, 100,
-//		 100)));
+		// left.setBackground(new Color(Display.getCurrent(), new RGB(100, 100,
+		// 100)));
 		left.setLayout(new FormLayout());
 
 		FormData leftCompformData = new FormData();
@@ -280,6 +271,7 @@ public class Main {
 				// Dateiinhalt in Array einlesen
 				arrayLinesReadIn = InputReader.getInput(parent);
 				FillCodeTable.inertLinesInCodeTable(arrayLinesReadIn);
+				setButtons(true);
 			};
 		});
 

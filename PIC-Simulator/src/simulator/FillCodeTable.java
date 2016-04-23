@@ -15,7 +15,7 @@ import org.eclipse.swt.widgets.TableItem;
 
 public class FillCodeTable {
 
-	private static Table codeTable;
+	static Table codeTable;
 	static ArrayList<Button> getButtoList = new ArrayList<>();
 	static Button[] testGetBto = new Button[200];
 	static int startValue;

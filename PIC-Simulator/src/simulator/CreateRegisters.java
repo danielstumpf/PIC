@@ -57,9 +57,10 @@ public class CreateRegisters {
 	 *            Erstellung der Tabellen für Spezialregister, Statusregister,
 	 *            Optionsregister, Intcon-Register Formatierung jeweils über
 	 *            FormData
+	 * @return 
 	 * 
 	 */
-	public static void createAllStates(Composite tabSpecComposite) {
+	public static Table createAllStates(Composite tabSpecComposite) {
 		// Spezialregister, Beschriftung und Tabelle erstellen
 		Label specRegLabel = new Label(tabSpecComposite, SWT.NONE);
 		FormData specRegLabelData = new FormData();
@@ -382,6 +383,7 @@ public class CreateRegisters {
 		calculateStatus();
 		calculateOption();
 		calculateIntcon();
+		return specRegTable;
 	}
 
 	public static String calculateIntcon() {
