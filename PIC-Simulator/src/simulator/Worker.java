@@ -26,50 +26,56 @@ public class Worker {
 
 
 
-	public static void workWithWorker(ArrayList<String> linesReadIn) {
+	public static void workWithWorker(ArrayList<String> linesReadIn) { //der Funktion workWithWorker wird ein Array von Strings mit dem Namen linesReadIn übergeben
 
-		String[] addressArrayHex = new String[linesReadIn.size()];
-		String[] instructionArrayHex = new String[linesReadIn.size()];
+		String[] addressArrayHex = new String[linesReadIn.size()]; //ein Stringarray mit dem Namen addressArrayHex von der Größe des Arrays linesReadIn wird erstellt 
+		String[] instructionArrayHex = new String[linesReadIn.size()]; //ein Stringarray mit dem Namen instructionArrayHex von der Größe des Arrays linesReadIn wird erstellt
+
+
 
 		//fill array only the first time with ""
 		for(int u = 0; u < registerInputArray.length; u++){
-			if(registerInputArray[u] == null) {
-				Arrays.fill(registerInputArray, "00");
+			if(registerInputArray[u] == null) { //wenn das Zeichen an der ersten betrachteten Stelle "null" ist (also wenn es gerade erst initialisiert wurde)
+				Arrays.fill(registerInputArray, "00"); //dann fülle den ganzen String mit Nullen
 			}
 		}
+		
+		//die Integervariable cyclesInMicroSeconds wird mit 1 gefüllt
+		cyclesInMicroSeconds = 1; 
 
-		cyclesInMicroSeconds = 1;
-
-		for(int i = 0; i < linesReadIn.size(); i++){
-			addressArrayHex[i] = linesReadIn.get(i).substring(0, 4);
-			instructionArrayHex[i] = linesReadIn.get(i).substring(5, 9);
+		for(int i = 0; i < linesReadIn.size(); i++){  //solange Variable i kleiner als die Größe des Arrays linesReadIn ist
+			addressArrayHex[i] = linesReadIn.get(i).substring(0, 4); //schreibe die ersten vier Zeichen des Strings an der Stelle i des Arrays linesReadIn in den String des Arrays addressArrayHex an der Stelle i
+			instructionArrayHex[i] = linesReadIn.get(i).substring(5, 9); //schreibe die letzten vier Zeichen des Strings an der Stelle i des Arrays linesReadIn in den String des Arrays instructionArrayHex an der Stelle i
 		}
+
+
+
 
 		//TODO if adressArrayHex[i].equals does not find one match, it starts from "0000" o.O
 		//start where addressHex = 0000
-		for(int i = 0; i < addressArrayHex.length; i++) {
-			if(addressArrayHex[i].equals("0000")) {
+		for(int i = 0; i < addressArrayHex.length; i++) { //durchlaufe das Array addressArrayHex
+			if(addressArrayHex[i].equals("0000")) { //wenn addressArrayHex an der aktuell betrachteten Stelle dem String "0000" entspricht
 				//				System.err.println("start setted");
-				indexOfstartAddressOfAdressArray = i;
-				instructionsString = instructionArrayHex[indexOfstartAddressOfAdressArray];
-				startInstruction = instructionArrayHex[indexOfstartAddressOfAdressArray];
-			} else if(addressArrayHex[i].equals(indexOfInstructions.toUpperCase())) {
-				instructionsString = instructionArrayHex[i];
-				break;
+				indexOfstartAddressOfAdressArray = i; //überschreibe die Integervariable indexOfstartAddressOfAdressArray mit dem aktuellen i-Wert
+				instructionsString = instructionArrayHex[indexOfstartAddressOfAdressArray]; //überschreibe den String instructionsString mit dem String aus instructionArrayHex an der Stelle i
+				startInstruction = instructionArrayHex[indexOfstartAddressOfAdressArray]; //überschreibe den String startInstruction mit demselben Wert wie instructionsString
+			} else if(addressArrayHex[i].equals(indexOfInstructions.toUpperCase())) { //wenn addressArrayHex an der aktuell betrachteten Stelle dem Wert von indexOfInstructions in Großbuchstaben entspricht 
+				instructionsString = instructionArrayHex[i]; //dann überschreibe den String instructionsString mit dem String aus instructionArrayHex an der Stelle i
+				break; //dann beende die for-Schleife
 			}
 		}
 
-		if(startFlag == true) {
-			instructionsString = startInstruction;
-			startFlag = false;
+		if(startFlag == true) { //wenn das startFlag auf true gesetzt ist
+			instructionsString = startInstruction; //instructionsString wird mit startInstruction überschrieben (beides sind Strings)
+			startFlag = false; //startFlag wird auf false gesetzt
 		} 
 
-		int instructions = Integer.parseInt(instructionsString,16);
+		int instructions = Integer.parseInt(instructionsString,16); //ein Integerwert (2 Byte) wird initialisert. Und das indem instructionsString von Hex in Dec umgewandelt
 
 		//Byte-Oriented File Register Operations
-		int opcode = instructions >> 8;
-		int destination = (instructions & 0x0080) >> 7;
-		int address = (instructions & 0x007F);
+		int opcode = instructions >> 8; //die 2 Byte Instruktionen werden hier getrennt. OpCode sind die 4 Bits 9-12 (die dritte Gruppe von rechts). Dieser bestimmt den Befehl
+		int destination = (instructions & 0x0080) >> 7; //unter destination wird das Bit an der Stelle 8 (von rechts) einzeln abgespeichert
+		int address = (instructions & 0x007F); //unter address werden die letzten 7 Bits abgespeichert
 		
 		if(CreateRegisters.statusRegItem.getText(2).equals("1")) {
 			address = 128 + address;	
@@ -530,7 +536,7 @@ public class Worker {
 						CreateRegisters.switchStatusClear(bit);
 					}
 					//					if(address == 129) {
-					//						CreateStateRegister.checkOneOrZero(CreateStateRegister.optionBits[bit]);
+					//						CreateRegisters.checkOneOrZero(CreateRegisters.optionBits[bit]);
 					//					}
 
 					registerInputArray[address] = Integer.toHexString(Integer.parseInt(backtogether,2));
@@ -737,7 +743,7 @@ public class Worker {
 						FillCodeTable.nextStepOnClick(indexOfInstructions.toUpperCase(), linesReadIn);
 						registerInputArray[2] = indexOfInstructions.substring(2, 4);
 						registerInputArray[3] = CreateRegisters.calculateStatus();
-						//						registerInputArray[129] = CreateStateRegister.calculateOption(CreateStateRegister.optionBits);
+						//						registerInputArray[129] = CreateRegisters.calculateOption(CreateRegisters.optionBits);
 						registerInputArray[129] = FillRegister.table.getItem(16).getText(2);
 						registerInputArray[5] = FillRegister.table.getItem(0).getText(6);
 						registerInputArray[6] = FillRegister.table.getItem(0).getText(7);
