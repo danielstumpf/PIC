@@ -31,8 +31,6 @@ public class Worker {
 		String[] addressArrayHex = new String[linesReadIn.size()];
 		String[] instructionArrayHex = new String[linesReadIn.size()];
 
-
-
 		//fill array only the first time with ""
 		for(int u = 0; u < registerInputArray.length; u++){
 			if(registerInputArray[u] == null) {
@@ -46,9 +44,6 @@ public class Worker {
 			addressArrayHex[i] = linesReadIn.get(i).substring(0, 4);
 			instructionArrayHex[i] = linesReadIn.get(i).substring(5, 9);
 		}
-
-
-
 
 		//TODO if adressArrayHex[i].equals does not find one match, it starts from "0000" o.O
 		//start where addressHex = 0000

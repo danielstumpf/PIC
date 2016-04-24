@@ -11,8 +11,6 @@ import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
-import org.eclipse.swt.layout.GridData;
-import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Event;
@@ -424,12 +422,6 @@ public class CreateRegisters {
 		return newArray;
 	}
 
-	public static void createStOpIntLabels(String nameOfLabel, Composite givenComp) {
-		Label label = new Label(givenComp, SWT.NONE);
-		label.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
-		label.setText(nameOfLabel);
-	}
-
 	public static void optionToBinary(String opt) {
 		String binaryOption = BigInteger.valueOf(Integer.parseInt(opt, 16)).toString(2);
 		while (binaryOption.length() < 8) {
@@ -587,6 +579,7 @@ public class CreateRegisters {
 		laufzeitVal.setText("0.00" + "µs");
 		FormData labelFormData = new FormData();
 		labelFormData.left = new FormAttachment(0, 3);
+		labelFormData.right = new FormAttachment(100, -3);
 		labelFormData.bottom = new FormAttachment(setBackRuntime, -3);
 		laufzeitVal.setLayoutData(labelFormData);
 	}
