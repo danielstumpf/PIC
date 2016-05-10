@@ -5,22 +5,15 @@ public class PicSimControllerThread_Once implements Runnable {
 
 	public PicSimControllerThread_Once(PicSimController controller) {
 		this.controller = controller;
-
 	}
 
 	@Override
 	public void run() {
-
 		try {
-
-			controller.start_programm(controller.get_Frequency() / 10);
-	
 			controller.countSteps();
+			controller.start_programm(controller.getFrequency() / 10);
 		} catch (InterruptedException e) {
-
 			e.printStackTrace();
 		}
-
 	}
-
 }

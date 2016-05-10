@@ -35,7 +35,7 @@ public class PicSimView {
 	private static final int COLUMNS = 9;
 	private static final int ROWS = 32;
 	private static final int REG_COLUMN_WIDTH = 90;
-	private static final int FREQ_MINIMUM = 500;
+	private static final int FREQ_MINIMUM = 200;
 	private static final int FREQ_MAXIMUM = 10000;
 	private Display display;
 	private Shell shell;
@@ -83,6 +83,9 @@ public class PicSimView {
 	private Slider slider;
 	private TableEditor editor;
 	private List<Button> checkButtonList;
+	private Table statusRegTable;
+	private Table optionsRegTable;
+	private Table intconRegTable;
 
 	public PicSimView() {
 		display = new Display();
@@ -359,65 +362,65 @@ public class PicSimView {
 		statusRegLabel.setLayoutData(statusRegLabelData);
 		statusRegLabel.setText("Status-Register");
 
-		Table statusRegTable = new Table(centerDown, SWT.BORDER);
-		statusRegTable.setHeaderVisible(true);
-		statusRegTable.setLinesVisible(true);
+		setStatusRegTable(new Table(centerDown, SWT.BORDER));
+		getStatusRegTable().setHeaderVisible(true);
+		getStatusRegTable().setLinesVisible(true);
 
 		FormData statusRegData = new FormData();
 		statusRegData.top = new FormAttachment(statusRegLabel, 5);
 		statusRegData.left = new FormAttachment(getSpecRegTable(), 5);
 		statusRegData.bottom = new FormAttachment(30);
-		statusRegTable.setLayoutData(statusRegData);
+		getStatusRegTable().setLayoutData(statusRegData);
 
 		// Tabellenspalte für "IRP-Bit"
-		TableColumn statusIRPColumn = new TableColumn(statusRegTable, SWT.NONE);
+		TableColumn statusIRPColumn = new TableColumn(getStatusRegTable(), SWT.NONE);
 		statusIRPColumn.setResizable(false);
 		statusIRPColumn.setWidth(REG_COLUMN_WIDTH);
 		statusIRPColumn.setText("IRP");
 
 		// Tabellenspalte für "RP1-Bit"
-		TableColumn statusRP1Column = new TableColumn(statusRegTable, SWT.NONE);
+		TableColumn statusRP1Column = new TableColumn(getStatusRegTable(), SWT.NONE);
 		statusRP1Column.setResizable(false);
 		statusRP1Column.setWidth(REG_COLUMN_WIDTH);
 		statusRP1Column.setText("RP1");
 
 		// Tabellenspalte für "RP0-Bit"
-		TableColumn statusRP0Column = new TableColumn(statusRegTable, SWT.NONE);
+		TableColumn statusRP0Column = new TableColumn(getStatusRegTable(), SWT.NONE);
 		statusRP0Column.setResizable(false);
 		statusRP0Column.setWidth(REG_COLUMN_WIDTH);
 		statusRP0Column.setText("RP0");
 
 		// Tabellenspalte für "P0-Bit"
-		TableColumn statusT0Column = new TableColumn(statusRegTable, SWT.NONE);
+		TableColumn statusT0Column = new TableColumn(getStatusRegTable(), SWT.NONE);
 		statusT0Column.setResizable(false);
 		statusT0Column.setWidth(REG_COLUMN_WIDTH);
 		statusT0Column.setText("T0");
 
 		// Tabellenspalte für "PD-Bit"
-		TableColumn statusPDColumn = new TableColumn(statusRegTable, SWT.NONE);
+		TableColumn statusPDColumn = new TableColumn(getStatusRegTable(), SWT.NONE);
 		statusPDColumn.setResizable(false);
 		statusPDColumn.setWidth(REG_COLUMN_WIDTH);
 		statusPDColumn.setText("PD");
 
 		// Tabellenspalte für "Z-Bit"
-		TableColumn statusZColumn = new TableColumn(statusRegTable, SWT.NONE);
+		TableColumn statusZColumn = new TableColumn(getStatusRegTable(), SWT.NONE);
 		statusZColumn.setResizable(false);
 		statusZColumn.setWidth(REG_COLUMN_WIDTH);
 		statusZColumn.setText("Z");
 
 		// Tabellenspalte für "DC-Bit"
-		TableColumn statusDCColumn = new TableColumn(statusRegTable, SWT.NONE);
+		TableColumn statusDCColumn = new TableColumn(getStatusRegTable(), SWT.NONE);
 		statusDCColumn.setResizable(false);
 		statusDCColumn.setWidth(REG_COLUMN_WIDTH);
 		statusDCColumn.setText("DC");
 
 		// Tabellenspalte für "C-Bit"
-		TableColumn statusCColumn = new TableColumn(statusRegTable, SWT.NONE);
+		TableColumn statusCColumn = new TableColumn(getStatusRegTable(), SWT.NONE);
 		statusCColumn.setResizable(false);
 		statusCColumn.setWidth(REG_COLUMN_WIDTH);
 		statusCColumn.setText("C");
 
-		statusRegItem = new TableItem(statusRegTable, SWT.NONE);
+		statusRegItem = new TableItem(getStatusRegTable(), SWT.NONE);
 
 		for (int i = 0; i < 8; i++) {
 			statusRegItem.setText(i, "0");
@@ -429,62 +432,62 @@ public class PicSimView {
 
 		Label optionRegLabel = new Label(centerDown, SWT.NONE);
 		FormData optionRegLabelData = new FormData();
-		optionRegLabelData.top = new FormAttachment(statusRegTable, 5);
+		optionRegLabelData.top = new FormAttachment(getStatusRegTable(), 5);
 		optionRegLabelData.left = new FormAttachment(getSpecRegTable(), 5);
 		optionRegLabel.setLayoutData(optionRegLabelData);
 		optionRegLabel.setText("Options-Register");
 
-		Table optionsRegTable = new Table(centerDown, SWT.BORDER);
-		optionsRegTable.setHeaderVisible(true);
-		optionsRegTable.setLinesVisible(true);
+		setOptionsRegTable(new Table(centerDown, SWT.BORDER));
+		getOptionsRegTable().setHeaderVisible(true);
+		getOptionsRegTable().setLinesVisible(true);
 
 		FormData optionsRegData = new FormData();
 		optionsRegData.top = new FormAttachment(optionRegLabel, 5);
 		optionsRegData.left = new FormAttachment(getSpecRegTable(), 5);
 		optionsRegData.bottom = new FormAttachment(60);
-		optionsRegTable.setLayoutData(optionsRegData);
+		getOptionsRegTable().setLayoutData(optionsRegData);
 
-		TableColumn statusRBPColumn = new TableColumn(optionsRegTable, SWT.NONE);
+		TableColumn statusRBPColumn = new TableColumn(getOptionsRegTable(), SWT.NONE);
 		statusRBPColumn.setResizable(false);
 		statusRBPColumn.setWidth(REG_COLUMN_WIDTH);
 		statusRBPColumn.setText("RBP");
 
-		TableColumn optionsINTEDGColumn = new TableColumn(optionsRegTable, SWT.NONE);
+		TableColumn optionsINTEDGColumn = new TableColumn(getOptionsRegTable(), SWT.NONE);
 		optionsINTEDGColumn.setResizable(false);
 		optionsINTEDGColumn.setWidth(REG_COLUMN_WIDTH);
 		optionsINTEDGColumn.setText("INTEDG");
 
-		TableColumn optionsT0CSColumn = new TableColumn(optionsRegTable, SWT.NONE);
+		TableColumn optionsT0CSColumn = new TableColumn(getOptionsRegTable(), SWT.NONE);
 		optionsT0CSColumn.setResizable(false);
 		optionsT0CSColumn.setWidth(REG_COLUMN_WIDTH);
 		optionsT0CSColumn.setText("T0CS");
 
-		TableColumn optionsT0SEColumn = new TableColumn(optionsRegTable, SWT.NONE);
+		TableColumn optionsT0SEColumn = new TableColumn(getOptionsRegTable(), SWT.NONE);
 		optionsT0SEColumn.setResizable(false);
 		optionsT0SEColumn.setWidth(REG_COLUMN_WIDTH);
 		optionsT0SEColumn.setText("T0SE");
 
-		TableColumn optionsPSAColumn = new TableColumn(optionsRegTable, SWT.NONE);
+		TableColumn optionsPSAColumn = new TableColumn(getOptionsRegTable(), SWT.NONE);
 		optionsPSAColumn.setResizable(false);
 		optionsPSAColumn.setWidth(REG_COLUMN_WIDTH);
 		optionsPSAColumn.setText("PSA");
 
-		TableColumn optionsPS2Column = new TableColumn(optionsRegTable, SWT.NONE);
+		TableColumn optionsPS2Column = new TableColumn(getOptionsRegTable(), SWT.NONE);
 		optionsPS2Column.setResizable(false);
 		optionsPS2Column.setWidth(REG_COLUMN_WIDTH);
 		optionsPS2Column.setText("PS2");
 
-		TableColumn optionsPS1Column = new TableColumn(optionsRegTable, SWT.NONE);
+		TableColumn optionsPS1Column = new TableColumn(getOptionsRegTable(), SWT.NONE);
 		optionsPS1Column.setResizable(false);
 		optionsPS1Column.setWidth(REG_COLUMN_WIDTH);
 		optionsPS1Column.setText("PS1");
 
-		TableColumn optionsPS0Column = new TableColumn(optionsRegTable, SWT.NONE);
+		TableColumn optionsPS0Column = new TableColumn(getOptionsRegTable(), SWT.NONE);
 		optionsPS0Column.setResizable(false);
 		optionsPS0Column.setWidth(REG_COLUMN_WIDTH);
 		optionsPS0Column.setText("PS0");
 
-		optionsRegItem = new TableItem(optionsRegTable, SWT.NONE);
+		optionsRegItem = new TableItem(getOptionsRegTable(), SWT.NONE);
 
 		for (int i = 0; i < 8; i++) {
 			optionsRegItem.setText(i, "1");
@@ -494,62 +497,62 @@ public class PicSimView {
 
 		Label intconRegLabel = new Label(centerDown, SWT.NONE);
 		FormData intconRegLabelData = new FormData();
-		intconRegLabelData.top = new FormAttachment(optionsRegTable, 5);
+		intconRegLabelData.top = new FormAttachment(getOptionsRegTable(), 5);
 		intconRegLabelData.left = new FormAttachment(getSpecRegTable(), 5);
 		intconRegLabel.setLayoutData(intconRegLabelData);
 		intconRegLabel.setText("Intcon-Register");
 
-		Table intconRegTable = new Table(centerDown, SWT.FULL_SELECTION);
-		intconRegTable.setHeaderVisible(true);
-		intconRegTable.setLinesVisible(true);
+		setIntconRegTable(new Table(centerDown, SWT.FULL_SELECTION));
+		getIntconRegTable().setHeaderVisible(true);
+		getIntconRegTable().setLinesVisible(true);
 
 		FormData intconRegData = new FormData();
 		intconRegData.top = new FormAttachment(intconRegLabel, 5);
 		intconRegData.left = new FormAttachment(getSpecRegTable(), 5);
 		intconRegData.bottom = new FormAttachment(90);
-		intconRegTable.setLayoutData(intconRegData);
+		getIntconRegTable().setLayoutData(intconRegData);
 
-		TableColumn intconGIEColumn = new TableColumn(intconRegTable, SWT.NONE);
+		TableColumn intconGIEColumn = new TableColumn(getIntconRegTable(), SWT.NONE);
 		intconGIEColumn.setResizable(false);
 		intconGIEColumn.setWidth(REG_COLUMN_WIDTH);
 		intconGIEColumn.setText("GIE");
 
-		TableColumn intconEEIEColumn = new TableColumn(intconRegTable, SWT.NONE);
+		TableColumn intconEEIEColumn = new TableColumn(getIntconRegTable(), SWT.NONE);
 		intconEEIEColumn.setResizable(false);
 		intconEEIEColumn.setWidth(REG_COLUMN_WIDTH);
 		intconEEIEColumn.setText("EEIE");
 
-		TableColumn intconT0IEColumn = new TableColumn(intconRegTable, SWT.NONE);
+		TableColumn intconT0IEColumn = new TableColumn(getIntconRegTable(), SWT.NONE);
 		intconT0IEColumn.setResizable(false);
 		intconT0IEColumn.setWidth(REG_COLUMN_WIDTH);
 		intconT0IEColumn.setText("T0IE");
 
-		TableColumn intconINTEColumn = new TableColumn(intconRegTable, SWT.NONE);
+		TableColumn intconINTEColumn = new TableColumn(getIntconRegTable(), SWT.NONE);
 		intconINTEColumn.setResizable(false);
 		intconINTEColumn.setWidth(REG_COLUMN_WIDTH);
 		intconINTEColumn.setText("INTE");
 
-		TableColumn intconRBIEColumn = new TableColumn(intconRegTable, SWT.NONE);
+		TableColumn intconRBIEColumn = new TableColumn(getIntconRegTable(), SWT.NONE);
 		intconRBIEColumn.setResizable(false);
 		intconRBIEColumn.setWidth(REG_COLUMN_WIDTH);
 		intconRBIEColumn.setText("RBIE");
 
-		TableColumn intconT0IFColumn = new TableColumn(intconRegTable, SWT.NONE);
+		TableColumn intconT0IFColumn = new TableColumn(getIntconRegTable(), SWT.NONE);
 		intconT0IFColumn.setResizable(false);
 		intconT0IFColumn.setWidth(REG_COLUMN_WIDTH);
 		intconT0IFColumn.setText("T0IF");
 
-		TableColumn intconINTFColumn = new TableColumn(intconRegTable, SWT.NONE);
+		TableColumn intconINTFColumn = new TableColumn(getIntconRegTable(), SWT.NONE);
 		intconINTFColumn.setResizable(false);
 		intconINTFColumn.setWidth(REG_COLUMN_WIDTH);
 		intconINTFColumn.setText("INTF");
 
-		TableColumn intconRBIFColumn = new TableColumn(intconRegTable, SWT.NONE);
+		TableColumn intconRBIFColumn = new TableColumn(getIntconRegTable(), SWT.NONE);
 		intconRBIFColumn.setResizable(false);
 		intconRBIFColumn.setWidth(REG_COLUMN_WIDTH);
 		intconRBIFColumn.setText("RBIF");
 
-		intconRegItem = new TableItem(intconRegTable, SWT.NONE);
+		intconRegItem = new TableItem(getIntconRegTable(), SWT.NONE);
 
 		for (int i = 0; i < 8; i++) {
 			intconRegItem.setText(i, "0");
@@ -559,19 +562,19 @@ public class PicSimView {
 		FormData statusLabelData = new FormData();
 		statusLabelData.top = new FormAttachment(0, 3);
 		statusLabelData.left = new FormAttachment(statusRegLabel, 10);
-		statusLabelData.width = 35;
+		statusLabelData.width = 50;
 		statusRegHexValue.setLayoutData(statusLabelData);
 
 		optionRegHexValue = new Label(centerDown, SWT.NONE);
 		FormData optionLabelData = new FormData();
-		optionLabelData.bottom = new FormAttachment(optionsRegTable, -3);
+		optionLabelData.bottom = new FormAttachment(getOptionsRegTable(), -3);
 		optionLabelData.left = new FormAttachment(optionRegLabel, 10);
 		optionLabelData.width = 35;
 		optionRegHexValue.setLayoutData(optionLabelData);
 
 		intconRegHexValue = new Label(centerDown, SWT.NONE);
 		FormData intconLabelData = new FormData();
-		intconLabelData.bottom = new FormAttachment(intconRegTable, -3);
+		intconLabelData.bottom = new FormAttachment(getIntconRegTable(), -3);
 		intconLabelData.left = new FormAttachment(intconRegLabel, 10);
 		intconLabelData.width = 35;
 		intconRegHexValue.setLayoutData(intconLabelData);
@@ -1166,7 +1169,7 @@ public class PicSimView {
 		inputList.add(value);
 	}
 
-	public void clear_ListModel() {
+	public void clearListModel() {
 		codeTable.removeAll();
 		inputList.clear();
 	}
@@ -1226,7 +1229,40 @@ public class PicSimView {
 		System.out.println("binary: " + binary);
 		return binary;
 	}
+	
+	public int getValueStatusReg() {
+		StringBuilder builder = new StringBuilder();
+		for (int i = 0; i < 8; i++) {
+			builder.append(statusRegItem.getText(i));
+		}
+		int binary = 0;
+		binary = Integer.parseInt(builder.toString(), 2);
+		System.out.println("binary: " + binary);
+		return binary;
+	}
 
+	public int getValueOptionReg() {
+		StringBuilder builder = new StringBuilder();
+		for (int i = 0; i < 8; i++) {
+			builder.append(optionsRegItem.getText(i));
+		}
+		int binary = 0;
+		binary = Integer.parseInt(builder.toString(), 2);
+		System.out.println("binary: " + binary);
+		return binary;
+	}
+	
+	public int getValueIntconReg() {
+		StringBuilder builder = new StringBuilder();
+		for (int i = 0; i < 8; i++) {
+			builder.append(intconRegItem.getText(i));
+		}
+		int binary = 0;
+		binary = Integer.parseInt(builder.toString(), 2);
+		System.out.println("binary: " + binary);
+		return binary;
+	}
+	
 	public String getFilePath() {
 		FileDialog dialog = new FileDialog(shell);
 		String[] extensions = { "lst" };
@@ -1256,6 +1292,18 @@ public class PicSimView {
 
 	public void setChangePortBBits(Listener l) {
 		getTablePortB().addListener(SWT.MouseDoubleClick, l);
+	}
+
+	public void setChangeOptionRegBits(Listener l) {
+		getOptionsRegTable().addListener(SWT.MouseDoubleClick, l);
+	}
+
+	public void setChangeStatusRegBits(Listener l) {
+		getStatusRegTable().addListener(SWT.MouseDoubleClick, l);
+	}
+
+	public void setChangeIntconRegBits(Listener l) {
+		getIntconRegTable().addListener(SWT.MouseDoubleClick, l);
 	}
 
 	public void setSliderFrequencyListener(Listener l) {
@@ -1366,5 +1414,37 @@ public class PicSimView {
 
 	public void setBreakPointButtonListener(SelectionAdapter listener) {
 
+	}
+
+	public void setPcValue(String programmCounter) {
+		itemRegPC.setText(1, programmCounter);
+	}
+
+	public void setPclValue(String pcl) {
+		itemRegPCL.setText(1, pcl);
+	}
+
+	public Table getIntconRegTable() {
+		return intconRegTable;
+	}
+
+	public void setIntconRegTable(Table intconRegTable) {
+		this.intconRegTable = intconRegTable;
+	}
+
+	public Table getOptionsRegTable() {
+		return optionsRegTable;
+	}
+
+	public void setOptionsRegTable(Table optionsRegTable) {
+		this.optionsRegTable = optionsRegTable;
+	}
+
+	public Table getStatusRegTable() {
+		return statusRegTable;
+	}
+
+	public void setStatusRegTable(Table statusRegTable) {
+		this.statusRegTable = statusRegTable;
 	}
 }

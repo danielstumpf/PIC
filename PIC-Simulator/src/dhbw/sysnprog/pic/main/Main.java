@@ -2,7 +2,6 @@ package dhbw.sysnprog.pic.main;
 
 import dhbw.sysnprog.pic.controller.PicSimController;
 import dhbw.sysnprog.pic.model.PicSimModel;
-import dhbw.sysnprog.pic.serial.PicSimSerialController;
 import dhbw.sysnprog.pic.view.PicSimView;
 
 public class Main {
@@ -11,17 +10,14 @@ public class Main {
 	static PicSimView view;
 
 	/**
-	 * Diese Klasse wird nur dazu benutzt alle nÃ¶tigen Komponenten zu
-	 * Initialisieren und die erste View anzuzeigen
+	 * Einstieg in das Programm. Instanzen von Model, view und controller werden
+	 * erstellt und die view wird geöffnet
 	 */
 	public static void main(String[] args) {
 		model = new PicSimModel();
 		view = new PicSimView();
 		controller = new PicSimController(view, model);
-	
+
 		view.open();
-	
 	}
-	
-	
 }

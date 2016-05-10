@@ -4,53 +4,37 @@ import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.KeyEvent;
-import org.eclipse.swt.events.KeyListener;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.events.SelectionListener;
-import org.eclipse.swt.graphics.Point;
-import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Event;
-import org.eclipse.swt.widgets.FileDialog;
-import org.eclipse.swt.widgets.Listener;
-import org.eclipse.swt.widgets.TableItem;
-import org.eclipse.swt.widgets.Text;
-
 import dhbw.sysnprog.pic.model.PicSimModel;
-import dhbw.sysnprog.pic.serial.PicSimSerialController;
 import dhbw.sysnprog.pic.view.PicSimView;
-import simulator.CreateRegisters;
-import simulator.PortA;
-import simulator.PortB;
-import simulator.Worker;
 
+/**
+ * @author Daniel
+ *
+ */
+/**
+ * @author Daniel
+ *
+ */
 public class PicSimController {
 	private PicSimView view;
 	private PicSimModel model;
 	private boolean running;
 
-	private PicSimSerialController serial;
-	private boolean serialConnected = false;
-
 	public PicSimController(PicSimView view, PicSimModel model) {
 		this.view = view;
 		this.model = model;
 		this.running = false;
-		model.reset_model();
-		addListener();
+		model.resetModel();
 		valueOnPowerUp();
-		//// searchForComPorts();
+		new PicSimListener(this, view, model);
 		ReloadGUI();
 	}
 
-	private void valueOnPowerUp() {
-		/* Vorbelegung einiger Werte */
+	/**
+	 * Vorbelegung der Registereinträge beim Start des Programms
+	 */
+	void valueOnPowerUp() {
 		model.setRegisterEntry(0x3, 24);
 		model.setRegisterEntry(0x81, 255);
 		model.setRegisterEntry(0x83, 24);
@@ -58,288 +42,336 @@ public class PicSimController {
 		model.setRegisterEntry(0x86, 255);
 	}
 
-	// private void searchForComPorts() {
-	// @SuppressWarnings("rawtypes")
-	// Enumeration portIdentifiers = CommPortIdentifier.getPortIdentifiers();
-	// if (portIdentifiers != null) {
-	// while (portIdentifiers.hasMoreElements()) {
-	// CommPortIdentifier pid = (CommPortIdentifier) portIdentifiers
-	// .nextElement();
-	// if (pid.getPortType() == CommPortIdentifier.PORT_SERIAL) {
-	// view.initializeComMenu(pid.getName());
-	//
-	// System.out.println(pid.getName());
-	// }
-	// }
-	// } else {
-	// view.set_ErrorMsgs("Keine COM-Ports gefunden.");
-	// }
-	//
-	// }
-
-	private void addListener() {
-		// TODO
-		view.setResetListener(new SelectionAdapter() {
-			public void widgetSelected(SelectionEvent e) {
-				model.reset_model();
-				valueOnPowerUp();
-				ReloadGUI();
+	/**
+	 * Ändert das entsprechende Bit im Intcon-Register
+	 * 
+	 * @param column
+	 *            Spalte, in welcher das Bit geändert werden soll
+	 */
+	protected void changeBitIntconReg(int column) {
+		switch (column) {
+		case 8: {
+			int temp = view.getValueIntconReg() & 0b00000001;
+			if (temp == 0) {
+				model.setIntcon(model.getIntcon() + 1);
+			} else {
+				model.setIntcon(model.getIntcon() - 1);
 			}
-		});
-
-		view.setNextStepListener(new SelectionAdapter() {
-			public void widgetSelected(SelectionEvent e) {
-				run_one_function();
-			}
-		});
-		view.setStartProgramListener(new SelectionAdapter() {
-			public void widgetSelected(SelectionEvent e) {
-				run_all_functions();
-			}
-		});
-		view.setPauseListener(new SelectionAdapter() {
-			public void widgetSelected(SelectionEvent e) {
-				try {
-					if (serialConnected) {
-						serial.close();
-					}
-				} catch (Exception e1) {
-					e1.printStackTrace();
-				}
-				serialConnected = false;
-				view.setSerialDisconnected();
-				set_running(false);
-			}
-		});
-		// view.setSpeichernRegisterListener(new SpeichernRegisterListener());
-		view.setOpenFileListener(new SelectionAdapter() {
-			public void widgetSelected(SelectionEvent e) {
-				String[] extensions = { "*.lst" };
-				FileDialog dialog = new FileDialog(view.getShell());
-				dialog.setFilterExtensions(extensions);
-				String filePath = dialog.open();
-				loadFile(filePath);
-				filterCode();
-				view.setCodeInput();
-			}
-		});
-
-		view.setSliderFrequencyListener(new Listener() {
-			@Override
-			public void handleEvent(Event event) {
-				view.getQuarzFreqVal().setText(String.valueOf(view.getSlider().getSelection()));
-				model.setTakt(view.getFrequency());
-			}
-		});
-
-		view.setSpecRegListener(new Listener() {
-			public void handleEvent(Event event) {
-				Rectangle clientArea = view.getSpecRegTable().getClientArea();
-				Point pt = new Point(event.x, event.y);
-				int index = view.getTableMem().getTopIndex();
-				while (index < view.getSpecRegTable().getItemCount()) {
-					boolean visible = false;
-					final TableItem item = view.getSpecRegTable().getItem(index);
-					final int column = 1;
-					Rectangle rect = item.getBounds(column);
-					if (rect.contains(pt)) {
-						final Text text = new Text(view.getSpecRegTable(), SWT.NONE);
-						Listener textListener = new Listener() {
-							public void handleEvent(final Event e) {
-								switch (e.type) {
-								case SWT.FocusOut:
-									item.setText(column, text.getText());
-									text.dispose();
-									break;
-								case SWT.Traverse:
-									switch (e.detail) {
-									case SWT.TRAVERSE_RETURN:
-										item.setText(column, text.getText());
-										if (item.getText(column).length() == 1) {
-											item.setText(column, "0" + item.getText(column));
-										}
-									case SWT.TRAVERSE_ESCAPE:
-										text.dispose();
-										e.doit = false;
-									}
-								}
-								writeTableToRegister();
-								ReloadGUI();
-							}
-						};
-						text.addListener(SWT.FocusOut, textListener);
-						text.addListener(SWT.Traverse, textListener);
-						view.getEditor().setEditor(text, item, column);
-						text.setText(item.getText(column));
-						text.selectAll();
-						text.setFocus();
-						text.setTextLimit(2);
-						return;
-					}
-					if (!visible && rect.intersects(clientArea)) {
-						visible = true;
-					}
-					if (!visible)
-						return;
-					index++;
-				}
-			}
-		});
-
-		view.setChangePortABits(new Listener() {
-			public void handleEvent(Event event) {
-				Point pt = new Point(event.x, event.y);
-				final TableItem item = view.getTablePortA().getItem(1);
-				for (int i = 1; i < view.getTablePortA().getColumnCount(); i++) {
-					Rectangle rect = item.getBounds(i);
-					if (rect.contains(pt)) {
-						final int column = i;
-						changeBitPortA(column);
-					}
-				}
-			}
-		});
-
-		view.setChangePortBBits(new Listener() {
-			public void handleEvent(Event event) {
-				Point pt = new Point(event.x, event.y);
-				final TableItem item = view.getTablePortB().getItem(1);
-				for (int i = 1; i < view.getTablePortB().getColumnCount(); i++) {
-					Rectangle rect = item.getBounds(i);
-					if (rect.contains(pt)) {
-						final int column = i;
-						changeTheRegisterFromPortB(column);
-					}
-				}
-			}
-		});
-
-		view.setMemoryListener(new Listener() {
-			public void handleEvent(Event event) {
-				Rectangle clientArea = view.getTableMem().getClientArea();
-				Point pt = new Point(event.x, event.y);
-				int index = view.getTableMem().getTopIndex();
-				while (index < view.getTableMem().getItemCount()) {
-					boolean visible = false;
-					final TableItem item = view.getTableMem().getItem(index);
-					for (int i = 1; i < view.getTableMem().getColumnCount(); i++) {
-						Rectangle rect = item.getBounds(i);
-						if (rect.contains(pt)) {
-							final int column = i;
-							final Text text = new Text(view.getTableMem(), SWT.NONE);
-							Listener textListener = new Listener() {
-								public void handleEvent(final Event e) {
-									switch (e.type) {
-									case SWT.FocusOut:
-										item.setText(column, text.getText());
-										text.dispose();
-										break;
-									case SWT.Traverse:
-										switch (e.detail) {
-										case SWT.TRAVERSE_RETURN:
-											item.setText(column, text.getText());
-											if (item.getText(column).length() == 1) {
-												item.setText(column, "0" + item.getText(column));
-											}
-											// set the input from the register
-											// in the registerInputArray
-											// FALL THROUGH
-										case SWT.TRAVERSE_ESCAPE:
-											text.dispose();
-											e.doit = false;
-										}
-									}
-									writeTableToRegister();
-									ReloadGUI();
-								}
-							};
-							text.addListener(SWT.FocusOut, textListener);
-							text.addListener(SWT.Traverse, textListener);
-							view.getEditor().setEditor(text, item, i);
-							text.setText(item.getText(i));
-							text.selectAll();
-							text.setFocus();
-							text.setTextLimit(2);
-							return;
-						}
-						if (!visible && rect.intersects(clientArea)) {
-							visible = true;
-						}
-					}
-					if (!visible)
-						return;
-					index++;
-				}
-			}
-		});
-
-		// TODO view.setComPortChange(new ComPortChange());
-	}
-
-	public void reloadSerialViaThread() {
-		Thread t1 = new Thread(new SerialThread(this));
-		t1.run();
-	}
-
-	public void reloadSerial() {
-		if (serialConnected) {
-			try {
-				serial.sendRS232();
-				ArrayList<Integer> readSerial = new ArrayList<Integer>();
-				readSerial = serial.read();
-				if (readSerial.size() == 2) {
-					model.setRegisterEntryOneBit(5, readSerial.get(0) - 32);
-					model.setRegisterEntryOneBit(6, readSerial.get(1));
-					System.out.println("empfangen portA:" + readSerial.get(0) + "portB" + readSerial.get(1));
-				}
-
-			} catch (Exception e) {
-
-				e.printStackTrace();
-			}
+			break;
 		}
-		try {
-			// System.out.println(serial.read());
-		} catch (Exception e) {
-			e.printStackTrace();
+		case 7: {
+			int temp = view.getValueIntconReg() & 0b00000010;
+			if (temp == 0) {
+				model.setIntcon(model.getIntcon() + 2);
+			} else {
+				model.setIntcon(model.getIntcon() - 2);
+			}
+			break;
 		}
+		case 6: {
+			int temp = view.getValueIntconReg() & 0b00000100;
+			if (temp == 0) {
+				model.setIntcon(model.getIntcon() + 4);
+			} else {
+				model.setIntcon(model.getIntcon() - 4);
+			}
+			break;
+		}
+		case 5: {
+			int temp = view.getValueIntconReg() & 0b00001000;
+			if (temp == 0) {
+				model.setIntcon(model.getIntcon() + 8);
+			} else {
+				model.setIntcon(model.getIntcon() - 8);
+			}
+			break;
+		}
+		case 4: {
+			int temp = view.getValueIntconReg() & 0b00010000;
+			if (temp == 0) {
+				model.setIntcon(model.getIntcon() + 16);
+			} else {
+				model.setIntcon(model.getIntcon() - 16);
+			}
+			break;
+		}
+		case 3: {
+			int temp = view.getValueIntconReg() & 0b00100000;
+			if (temp == 0) {
+				model.setIntcon(model.getIntcon() + 32);
+			} else {
+				model.setIntcon(model.getIntcon() - 32);
+			}
+			break;
+		}
+		case 2: {
+			int temp = view.getValueIntconReg() & 0b01000000;
+			if (temp == 0) {
+				model.setIntcon(model.getIntcon() + 64);
+			} else {
+				model.setIntcon(model.getIntcon() - 64);
+			}
+			break;
+		}
+		case 1: {
+			int temp = view.getValueIntconReg() & 0b10000000;
+			if (temp == 0) {
+				model.setIntcon(model.getIntcon() + 128);
+			} else {
+				model.setIntcon(model.getIntcon() - 128);
+			}
+			break;
+		}
+		default: {
+			break;
+		}
+		}
+		ReloadGUI();
 	}
 
-	public boolean get_running() {
+	/**
+	 * Ändert das entsprechende Bit im Options-Register
+	 * 
+	 * @param column
+	 *            Spalte, in welcher das Bit geändert werden soll
+	 */
+	protected void changeBitOptionReg(int column) {
+		switch (column) {
+		case 8: {
+			int temp = view.getValueOptionReg() & 0b00000001;
+			if (temp == 0) {
+				model.setOption(model.getOption() + 1);
+			} else {
+				model.setOption(model.getOption() - 1);
+			}
+			break;
+		}
+		case 7: {
+			int temp = view.getValueOptionReg() & 0b00000010;
+			if (temp == 0) {
+				model.setOption(model.getOption() + 2);
+			} else {
+				model.setOption(model.getOption() - 2);
+			}
+			break;
+		}
+		case 6: {
+			int temp = view.getValueOptionReg() & 0b00000100;
+			if (temp == 0) {
+				model.setOption(model.getOption() + 4);
+			} else {
+				model.setOption(model.getOption() - 4);
+			}
+			break;
+		}
+		case 5: {
+			int temp = view.getValueOptionReg() & 0b00001000;
+			if (temp == 0) {
+				model.setOption(model.getOption() + 8);
+			} else {
+				model.setOption(model.getOption() - 8);
+			}
+			break;
+		}
+		case 4: {
+			int temp = view.getValueOptionReg() & 0b00010000;
+			if (temp == 0) {
+				model.setOption(model.getOption() + 16);
+			} else {
+				model.setOption(model.getOption() - 16);
+			}
+			break;
+		}
+		case 3: {
+			int temp = view.getValueOptionReg() & 0b00100000;
+			if (temp == 0) {
+				model.setOption(model.getOption() + 32);
+			} else {
+				model.setOption(model.getOption() - 32);
+			}
+			break;
+		}
+		case 2: {
+			int temp = view.getValueOptionReg() & 0b01000000;
+			if (temp == 0) {
+				model.setOption(model.getOption() + 64);
+			} else {
+				model.setOption(model.getOption() - 64);
+			}
+			break;
+		}
+		case 1: {
+			int temp = view.getValueOptionReg() & 0b10000000;
+			if (temp == 0) {
+				model.setOption(model.getOption() + 128);
+			} else {
+				model.setOption(model.getOption() - 128);
+			}
+			break;
+		}
+		default: {
+			break;
+		}
+		}
+		ReloadGUI();
+	}
+
+	/**
+	 * Ändert das entsprechende Bit im Status-Register
+	 * 
+	 * @param column
+	 *            Spalte, in welcher das Bit geändert werden soll
+	 */
+	protected void changeBitStatusReg(int column) {
+		switch (column) {
+		case 8: {
+			int temp = view.getValueStatusReg() & 0b00000001;
+			if (temp == 0) {
+				model.setStatus(model.getStatus() + 1);
+			} else {
+				model.setStatus(model.getStatus() - 1);
+			}
+			break;
+		}
+		case 7: {
+			int temp = view.getValueStatusReg() & 0b00000010;
+			if (temp == 0) {
+				model.setStatus(model.getStatus() + 2);
+			} else {
+				model.setStatus(model.getStatus() - 2);
+			}
+			break;
+		}
+		case 6: {
+			int temp = view.getValueStatusReg() & 0b00000100;
+			if (temp == 0) {
+				model.setStatus(model.getStatus() + 4);
+			} else {
+				model.setStatus(model.getStatus() - 4);
+			}
+			break;
+		}
+		case 5: {
+			int temp = view.getValueStatusReg() & 0b00001000;
+			if (temp == 0) {
+				model.setStatus(model.getStatus() + 8);
+			} else {
+				model.setStatus(model.getStatus() - 8);
+			}
+			break;
+		}
+		case 4: {
+			int temp = view.getValueStatusReg() & 0b00010000;
+			if (temp == 0) {
+				model.setStatus(model.getStatus() + 16);
+			} else {
+				model.setStatus(model.getStatus() - 16);
+			}
+			break;
+		}
+		case 3: {
+			int temp = view.getValueStatusReg() & 0b00100000;
+			if (temp == 0) {
+				model.setStatus(model.getStatus() + 32);
+			} else {
+				model.setStatus(model.getStatus() - 32);
+			}
+			break;
+		}
+		case 2: {
+			int temp = view.getValueStatusReg() & 0b01000000;
+			if (temp == 0) {
+				model.setStatus(model.getStatus() + 64);
+			} else {
+				model.setStatus(model.getStatus() - 64);
+			}
+			break;
+		}
+		case 1: {
+			int temp = view.getValueStatusReg() & 0b10000000;
+			if (temp == 0) {
+				model.setStatus(model.getStatus() + 128);
+			} else {
+				model.setStatus(model.getStatus() - 128);
+			}
+			break;
+		}
+		default: {
+			break;
+		}
+		}
+		ReloadGUI();
+	}
+
+	/**
+	 * @return boolean gibt an, ob Programm läuft oder pausiert ist
+	 */
+	public boolean getRunning() {
 		return running;
 	}
 
-	public void set_running(boolean s) {
-
+	/**
+	 * @param s
+	 *            setzt das Programm auf laufend oder nicht laufend
+	 */
+	public void setRunning(boolean s) {
 		running = s;
 	}
 
-	public int get_Frequency() {
+	/**
+	 * @return die aktuelle Frequenz, mit der das Programm läuft
+	 */
+	public int getFrequency() {
 		return model.getTakt();
 	}
 
-	/* ARRAY FÜR DAS REGISTER */
-
+	/**
+	 * Startet das geladene Programm
+	 * 
+	 * @param takt
+	 * @throws InterruptedException
+	 */
 	public void start_programm(int takt) throws InterruptedException {
-		/*
-		 * Überprüfung ob Ende des Programms erreicht wird kann am Ende gelöscht
-		 * werden !!
-		 */
-
 		if (model.getProgrammCounter() == model.codeList.size()) {
 			Thread.sleep(takt);
 			model.setProgramCounter(0);
-			start_function();
+			startFunction();
 		} else {
 			Thread.sleep(takt);
-			start_function();
+			startFunction();
 		}
-		// Timermode, Countermode Ã¼berprÃ¼fen und setzen
-		chooseMode();
+		if (model.getMode()) {
+			counterMode();
 
+		} else {
+			timerMode();
+		}
+		chooseMode();
 	}
 
-	public void start_function() throws InterruptedException {
+	private void counterMode() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	/**
+	 * true = Counter-Mode
+	 * false = Timer-Mode
+	 */
+	private void chooseMode() {
+		if (model.checkBitSet(5, 0x81)) {
+			model.setMode(true);
+		} else {
+			model.setMode(false);
+		}
+	}
+
+	/**
+	 * Startet die aktuelle Funktion
+	 * 
+	 * @throws InterruptedException
+	 */
+	public void startFunction() throws InterruptedException {
 		Display.getDefault().syncExec(new Runnable() {
 			public void run() {
 				for (int i = 0; i < view.breakpointList.size(); i++) {
@@ -354,65 +386,44 @@ public class PicSimController {
 					e.printStackTrace();
 				}
 				model.setProgramCounter(model.getProgrammCounter() + 1);
-				if (model.getMode()) {
-					countermode();
-
-				} else {
-					timermode();
-				}
 				ReloadGUI();
 			}
 		});
 	}
 
+	/**
+	 * Inhalte auf der Benutzeroberfläche werden aktualisiert
+	 */
 	public void ReloadGUI() {
-		/* Erweiterungen aktualisieren */
-		ReloadElements();
-		/* aktuell ausgeführten Code markieren */
+		// aktuell ausgeführten Code markieren
 		view.selectCode(model.getProgrammCounter());
+
+		// W-Register auf der Benutzeroberfläche setzen
 		view.setWvalue(String.format("%02X", model.registerW & 0xFF));
 
-		/* Aktualisieren der Tabelle mit den Werten aus Register_Array */
+		// Speichertabelle wird mit Werten aus dem Register-Array gesetzt
 		ReloadTable();
 
-		/* Status setzen */
+		// Status setzen
 		view.setStatusValue(model.getStatus());
 		view.setIntconValue(model.getIntcon());
 		view.setOptionValue(model.getOption());
-		/* Ports aktualisieren */
+
+		// Ports werden mit den Werten aus dem Model gesetzt
 		view.setPortALabels(model.getRegisterEntry(5));
 		view.setPortBLabels(model.getRegisterEntry(6));
 		view.setTrisALabels(model.getRegisterEntry(0x85));
 		view.setTrisBLabels(model.getRegisterEntry(0x86));
 
-		/* Wuerfel setzen */
-		// view.setWuerfel(false, false, false, false, false, false, false,
-		// false,
-		// false);
-
-		/* Laufzeit aktualisieren */
+		// Laufzeit wird aktualisiert
 		view.setLaufzeit(model.getRunningTime());
 
-		/* Programmschritte aktualisieren */
+		// Programmschritte werden aktualisiert
 		view.setSteps(model.getSteps());
+		view.setPclValue(String.format("%02d", model.getProgrammCounter() & 0xFF));
+		view.setPcValue(String.format("%04d", model.getProgrammCounter()));
 
-		/* Serielle Schnittstelle */
-		// TODO
-		// reloadSerialViaThread();
-		// if (serialConnected) {
-		// view.panel_portstatus.setBackground(Color.green);
-		// } else {
-		// view.panel_portstatus.setBackground(Color.decode("#f0f0f0"));
-		// }
-		/*
-		 * int m; for(m=0; m < view.breakpoint_list.size(); m++){
-		 * 
-		 * view.addBreakpoints(view.breakpoint_list.get(m));
-		 * 
-		 * }
-		 */
-
-		/* stack aktualisieren */
+		// Stack wird aktualisiert
 		if (!model.STACK.isEmpty()) {
 			Integer[] temp = new Integer[model.STACK.size()];
 			model.STACK.toArray(temp);
@@ -423,94 +434,73 @@ public class PicSimController {
 		}
 	}
 
-	public void ReloadElements() {
-		// TODO Elemente aktualisieren LEDs etc
-	}
-
+	/**
+	 * Aktualisierung der Speichertabelle mit Werten aus dem Register-Array
+	 */
 	public void ReloadTable() {
-		int m1 = 0, row = 0, column = 1;
-		while (m1 < 256) {
+		int index = 0, row = 0, column = 1;
+		while (index < 256) {
 			while (column < 9) {
-				/* Tabelle bekommt Werte aus Array zugewiesen */
-				view.setTableEntry(model.getRegisterEntry(m1), row, column);
+				view.setTableEntry(model.getRegisterEntry(index), row, column);
 				column++;
-				m1++;
+				index++;
 			}
 			column = 1;
 			row++;
 		}
 	}
 
-	public void run_one_function() {
-
-		Thread t1 = new Thread(new PicSimControllerThread_Once(this));
-		t1.start();
-		// TODO serielle verbindung bei einem schritt
-	}
-
-	private void start() {
-		int i;
-		for (i = 0; i < view.getListModelSize(); i++) {
-			model.checkCode(view.getElementListModel(i));
-		}
-	}
-
-	public void filterCode() {
-		/* Programmcode nach relevanten Zeilen filtern */
-		int i;
-		for (i = 0; i < view.getListModelSize(); i++) {
-			String temp = view.getElementListModel(i);
-			if (temp.startsWith("     ")) {
-				view.remove_ElementListModel(i);
-				i--;
-			}
-		}
-	}
-
-	public void run_all_functions() {
-
+	/**
+	 * Ausführen einer Funktion
+	 */
+	public void runOneFunction() {
 		if (view.getListModelSize() > 0) {
 
 			model.setStartTime(System.currentTimeMillis());
 			start();
 
-			set_running(true);
+			setRunning(true);
 
-			// TODO COMPORT
-			// if (view.portComCheck()) {
-			// serial = new PicSimSerialController(model);
-			// if (serial.open(model.getDefaultSerialPort())) {
-			// serialConnected = true;
-			// view.setSerialConnected();
-			// } else {
-			// serialConnected = false;
-			// view.setSerialDisconnected();
-			// }
-			// }
+			view.setVisibilityButtons(false, true, true);
+			Thread t1 = new Thread(new PicSimControllerThread_Once(this));
+
+			t1.start();
+		} else {
+			view.setErrorMsgs("Kein Programm geöffnet.");
+			setRunning(false);
+		}
+	}
+
+	/**
+	 * Geht durch die kompletten Inhalte und speichert den Befehlscode in der
+	 * Codeliste ab
+	 */
+	private void start() {
+		for (int i = 0; i < view.getListModelSize(); i++) {
+			model.checkCode(view.getElementListModel(i));
+		}
+	}
+
+	public void runAllFunctions() {
+		if (view.getListModelSize() > 0) {
+
+			model.setStartTime(System.currentTimeMillis());
+			start();
+
+			setRunning(true);
 
 			view.setVisibilityButtons(false, true, true);
 			Thread t1 = new Thread(new PicSimControllerThread(this));
 
 			t1.start();
-
 		} else {
 			view.setErrorMsgs("Kein Programm geöffnet.");
-			set_running(false);
+			setRunning(false);
 		}
 
 	}
 
-	public void chooseMode() {
-		if (model.checkBitSet(5, 0x81)) {/* CounterMode */
-
-			model.setMode(true);
-		} else {/* TimerMode */
-
-			model.setMode(false);
-		}
-	}
-
-	public void timermode() {
+	public void timerMode() {
 		if (model.checkBitSet(3, 0x81)) {
 			model.setRegisterEntryOneBit(1, model.getRegisterEntry(1) + 1);
 
@@ -527,7 +517,7 @@ public class PicSimController {
 						model.setBit(7, 0xb);
 						model.setBit(5, 0xb);
 						model.setBit(2, 0xb);
-						model.do_interrupt(2);
+						model.doInterrupt(2);
 
 					}
 					model.setPrescaler(1);
@@ -545,7 +535,7 @@ public class PicSimController {
 						model.setBit(7, 0xb);
 						model.setBit(5, 0xb);
 						model.setBit(2, 0xb);
-						model.do_interrupt(2);
+						model.doInterrupt(2);
 
 					}
 					model.setPrescaler(1);
@@ -563,7 +553,7 @@ public class PicSimController {
 						model.setBit(7, 0xb);
 						model.setBit(5, 0xb);
 						model.setBit(2, 0xb);
-						model.do_interrupt(2);
+						model.doInterrupt(2);
 
 					}
 					model.setPrescaler(1);
@@ -579,7 +569,7 @@ public class PicSimController {
 						model.setBit(7, 0xb);
 						model.setBit(5, 0xb);
 						model.setBit(2, 0xb);
-						model.do_interrupt(2);
+						model.doInterrupt(2);
 
 					}
 					model.setPrescaler(1);
@@ -595,7 +585,7 @@ public class PicSimController {
 						model.setBit(7, 0xb);
 						model.setBit(5, 0xb);
 						model.setBit(2, 0xb);
-						model.do_interrupt(2);
+						model.doInterrupt(2);
 
 					}
 					model.setPrescaler(1);
@@ -611,7 +601,7 @@ public class PicSimController {
 						model.setBit(7, 0xb);
 						model.setBit(5, 0xb);
 						model.setBit(2, 0xb);
-						model.do_interrupt(2);
+						model.doInterrupt(2);
 
 					}
 					model.setPrescaler(1);
@@ -627,7 +617,7 @@ public class PicSimController {
 						model.setBit(7, 0xb);
 						model.setBit(5, 0xb);
 						model.setBit(2, 0xb);
-						model.do_interrupt(2);
+						model.doInterrupt(2);
 
 					}
 					model.setPrescaler(1);
@@ -643,7 +633,7 @@ public class PicSimController {
 						model.setBit(7, 0xb);
 						model.setBit(5, 0xb);
 						model.setBit(2, 0xb);
-						model.do_interrupt(2);
+						model.doInterrupt(2);
 					}
 					model.setPrescaler(1);
 				} else {
@@ -657,64 +647,43 @@ public class PicSimController {
 		}
 	}
 
-	public void countermode() {
-
+	/**
+	 * Geht durch die kompletten Inhalte und entfernt unrelevante Codezeilen
+	 * sodass später nur Zeilen mit ausführbarem Befehlscode enthalten sind
+	 */
+	public void filterCode() {
+		for (int i = 0; i < view.getListModelSize(); i++) {
+			String temp = view.getElementListModel(i);
+			if (temp.startsWith("     ")) {
+				view.remove_ElementListModel(i);
+				i--;
+			}
+		}
 	}
 
-	// TODO
-	// class SpeichernRegisterListener implements ActionListener {
-	//
-	// @Override
-	// public void actionPerformed(ActionEvent e) {
-	//
-	// int i, m;
-	// for (i = 0; i <= 31; i++) {
-	// for (m = 1; m <= 8; m++) {
-	// int adress = i * 8 + m;
-	// String entry = view.getTableEntry(i, m);
-	// int value;
-	// try {
-	// value = Integer.parseInt(entry);
-	// model.setRegisterEntry(adress, value);
-	// } catch (NumberFormatException e1) {
-	// e1.printStackTrace();
-	// }
-	// }
-	// }
-	// }
-	// }
-
-	// TODO
-	// class SliderChangeListener implements ChangeListener {
-	// // TODO Slider
-	// @Override
-	// public void stateChanged(ChangeEvent e) {
-	// model.set_takt(view.getFrequency());
-	// view.setFrequency(model.get_takt());
-	// }
-	//
-	// }
-
-	private void loadFile(String filePath) {
+	/**
+	 * Lädt die Datei und fügt sie in die Inputlist ein
+	 * 
+	 * @param filePath
+	 *            Pfad zur Datei, welche das Programm enthält
+	 */
+	void loadFile(String filePath) {
 		running = false;
-		view.clear_ListModel();
-		model.reset_model();
+		view.clearListModel();
+		model.resetModel();
 		valueOnPowerUp();
+
 		ReloadGUI();
 
-		/* Datei einlesen mit Buffered Reader */
 		BufferedReader in;
 		String zeile = null;
-		model.setPath_of_programfile(filePath);
+		model.setProgramFilePath(filePath);
 
 		try {
-			in = new BufferedReader(new FileReader(model.getPath_of_programfile()));
+			in = new BufferedReader(new FileReader(model.getProgramFilePath()));
 			try {
 				while ((zeile = in.readLine()) != null) {
 					try {
-						/*
-						 * Zeile für Zeile wird eingefügt
-						 */
 						view.inputList.add(zeile);
 					} catch (Exception e1) {
 						System.out.println(e1);
@@ -733,91 +702,18 @@ public class PicSimController {
 		}
 	}
 
-	// TODO
-	// class RegisterLadenListener implements ActionListener {
-	//
-	// @Override
-	// public void actionPerformed(ActionEvent e) {
-	// register_load();
-	// }
-	// }
-
-	// TODO
-	// @SuppressWarnings("resource")
-	// public void register_load() {
-	// /* Auswï¿½ï¿½hlen der Datei */
-	// JFileChooser chooser = new JFileChooser();
-	// /* Was wurde angeklickt -> rueckgabewert */
-	// int rueckgabeWert = chooser.showOpenDialog(null);
-	// if (rueckgabeWert == JFileChooser.APPROVE_OPTION) {
-	// try {
-	// /* Datei einlesen mit Buffered Reader */
-	// BufferedReader in;
-	// String zeile = null;
-	// model.setPath_of_registerfile(chooser.getSelectedFile().getAbsolutePath());
-	// in = new BufferedReader(new FileReader(model.getPath_of_registerfile()));
-	// zeile = in.readLine();
-	// String[] splitResult = zeile.split(";");
-	//
-	// int m, s = 0;
-	// for (m = 0; m < 256; m++) {
-	// {
-	// /* Array wird mit Werten aus Dokument gefï¿½ï¿½llt */
-	// model.setRegisterEntry(m, Integer.parseInt(splitResult[s]));
-	// s++;
-	// }
-	// }
-	//
-	// ReloadGUI();
-	//
-	// } catch (IOException e1) {
-	// e1.printStackTrace();
-	// }
-	// }
-	// }
-
-	// TODO
-	// class OpenWuerfelListener implements ActionListener {
-	//
-	// @Override
-	// public void actionPerformed(ActionEvent e) {
-	// // TODO Auto-generated method stub
-	//
-	// }
-	// }
-
-	class ChangeTableEntryListener implements KeyListener {
-
-		@Override
-		public void keyPressed(KeyEvent e) {
-			// TODO Auto-generated method stub
-			if (e.keyCode == SWT.KEYPAD_CR) {
-				writeTableToRegister();
-			}
-		}
-
-		@Override
-		public void keyReleased(KeyEvent e) {
-			// TODO Auto-generated method stub
-		}
-	}
-
-	// TODO
-	// class ComPortChange implements ActionListener {
-	//
-	// @Override
-	// public void actionPerformed(ActionEvent arg0) {
-	// // TODO Comport
-	// // model.setDefaultSerialPort(view.selectedComPort());
-	// }
-	// }
-
 	public void writeToRegister(int adress, int value) {
 		model.setRegisterEntry(adress, value);
 		ReloadGUI();
 	}
 
-	private void changeBitPortA(int column) {
+	/**
+	 * Ändert das entsprechende Bit von PortA
+	 * 
+	 * @param column
+	 *            Spalte, in der das Bit geändert werden soll
+	 */
+	void changeBitPortA(int column) {
 		switch (column) {
 		case 8: {
 			int temp = view.getValuePortA() & 0b00000001;
@@ -899,7 +795,13 @@ public class PicSimController {
 		ReloadGUI();
 	}
 
-	private void changeTheRegisterFromPortB(int column) {
+	/**
+	 * Ändert das entsprechende Bit von PortB
+	 * 
+	 * @param column
+	 *            Spalte, in der das Bit geändert werden soll
+	 */
+	void changeTheRegisterFromPortB(int column) {
 		switch (column) {
 		case 8: {
 			int temp = view.getValuePortB() & 0b00000001;
@@ -911,7 +813,7 @@ public class PicSimController {
 
 			model.setBit(4, 0xb);
 
-			model.do_interrupt(1);
+			model.doInterrupt(1);
 			break;
 		}
 		case 7: {
@@ -951,7 +853,7 @@ public class PicSimController {
 			model.setBit(7, 0xb);
 			model.setBit(3, 0xb);
 			model.setBit(0, 0xb);
-			model.do_interrupt(3);
+			model.doInterrupt(3);
 			break;
 		}
 		case 3: {
@@ -964,7 +866,7 @@ public class PicSimController {
 			model.setBit(7, 0xb);
 			model.setBit(3, 0xb);
 			model.setBit(0, 0xb);
-			model.do_interrupt(3);
+			model.doInterrupt(3);
 			break;
 		}
 		case 2: {
@@ -977,7 +879,7 @@ public class PicSimController {
 			model.setBit(7, 0xb);
 			model.setBit(3, 0xb);
 			model.setBit(0, 0xb);
-			model.do_interrupt(3);
+			model.doInterrupt(3);
 			break;
 		}
 		case 1: {
@@ -990,7 +892,7 @@ public class PicSimController {
 			model.setBit(7, 0xb);
 			model.setBit(3, 0xb);
 			model.setBit(0, 0xb);
-			model.do_interrupt(3);
+			model.doInterrupt(3);
 			break;
 		}
 		default: {
@@ -1001,24 +903,33 @@ public class PicSimController {
 		ReloadGUI();
 	}
 
+	/**
+	 * Setzt die aktuelle Laufzeit. Dabei wird die Differenz der aktuellen Zeit
+	 * zur Startzeit gesetzt.
+	 */
 	public void setTime() {
 		model.setRunningTime((System.currentTimeMillis()) - (model.getStartTime()));
 	}
 
+	/**
+	 * Erhöht die Anzahl der durchgeführten Schritte um 1
+	 */
 	public void countSteps() {
 		model.setSteps();
 	}
 
+	/**
+	 * Schreibt die Werte aus der Speichertabelle in das Registerarray im Model
+	 */
 	public void writeTableToRegister() {
 		if (running == false) {
-			int i, m;
-			for (i = 0; i <= 31; i++) {
-				for (m = 0; m <= 7; m++) {
-					int adress = (i * 8 + m);
-					int value = Integer.parseInt(view.getTableEntry(i, m + 1), 16);
+			for (int i = 0; i <= 31; i++) {
+				for (int j = 0; j <= 7; j++) {
+					int adress = (i * 8 + j);
+					int value = Integer.parseInt(view.getTableEntry(i, j + 1), 16);
 					if (model.getRegisterEntry(adress) != value) {
 						model.registerArray[adress] = value;
-						System.out.println("adresse: " + adress + " neuer wert: " + value);
+						System.out.println("Adresse: " + adress + " Aktualisierter Wert: " + value);
 					}
 				}
 			}
