@@ -1144,13 +1144,12 @@ public class PicSimView {
 	}
 
 	public void stackClear() {
-		// TODO
-		// listModelStack.removeAll();
+		stackTable.clearAll();
 	}
 
 	public void stackAdd(Integer integer) {
-		// TODO
-		// listModelStack.add(String.valueOf(integer));
+		TableItem tableItem = new TableItem(stackTable, SWT.NONE);
+		tableItem.setText(1, Integer.toString(integer));
 	}
 
 	public void setTableEntry(int registerEntry, int row, int column) {
@@ -1186,11 +1185,6 @@ public class PicSimView {
 	}
 
 	public void setErrorMsgs(String string) {
-		// TODO Auto-generated method stub
-
-	}
-
-	public void setSerialDisconnected() {
 		// TODO Auto-generated method stub
 
 	}

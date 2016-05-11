@@ -37,7 +37,7 @@ public class PicSimModel {
 	/**
 	 * Stack
 	 */
-	public Deque<Integer> STACK = new ArrayDeque<Integer>();
+	public Deque<Integer> StackPC = new ArrayDeque<Integer>();
 	/**
 	 * Speicherinhalt
 	 */
@@ -118,7 +118,7 @@ public class PicSimModel {
 	 * Löschen des Stacks
 	 */
 	public void cleanStack() {
-		STACK.clear();
+		StackPC.clear();
 	}
 
 	/**
@@ -339,7 +339,7 @@ public class PicSimModel {
 			registerArray[m] = 0;
 		}
 		registerW = 0;
-		STACK.clear();
+		StackPC.clear();
 		sprung = 0;
 		PC = 0;
 		codeList.clear();
@@ -693,7 +693,7 @@ public class PicSimModel {
 	 * 
 	 */
 	private void do_call(int lit_K) {
-		STACK.add(getProgrammCounter());
+		StackPC.add(getProgrammCounter());
 		setProgramCounter(lit_K - 1);
 	}
 
@@ -947,7 +947,7 @@ public class PicSimModel {
 	 * GIE (INTCON<7>). This is a two cycle instruction.
 	 */
 	private void do_retfie() {
-		int adress = STACK.pop();
+		int adress = StackPC.pop();
 		setProgramCounter(adress);
 		// Global Interrupt setzen
 		setBit(7, 0xb);
@@ -964,7 +964,7 @@ public class PicSimModel {
 	private void do_retlw(int lit_K) {
 		int temp = lit_K & 0b0011111111;
 		registerW = temp;
-		int adress = STACK.pop();
+		int adress = StackPC.pop();
 		setProgramCounter(adress);
 	}
 
@@ -976,7 +976,7 @@ public class PicSimModel {
 	 * @throws InterruptedException
 	 */
 	private void do_return() throws InterruptedException {
-		int adress = STACK.pop();
+		int adress = StackPC.pop();
 		setProgramCounter(adress);
 	}
 
@@ -1177,7 +1177,7 @@ public class PicSimModel {
 			// RB0-Interrupt
 			case 1:
 				if (checkBitSet(4, 0xb)) {
-					STACK.add(getProgrammCounter());
+					StackPC.add(getProgrammCounter());
 					setProgramCounter(4);
 					setBit(1, 0xb);
 				}
@@ -1186,7 +1186,7 @@ public class PicSimModel {
 			// Timer-Interrupt
 			case 2:
 				if (checkBitSet(5, 0xb)) {
-					STACK.add(getProgrammCounter());
+					StackPC.add(getProgrammCounter());
 					setProgramCounter(4);
 					setBit(2, 0xb);
 				}
@@ -1194,7 +1194,7 @@ public class PicSimModel {
 			// Port-B-Interrupt
 			case 3:
 				if (checkBitSet(3, 0xb)) {
-					STACK.add(getProgrammCounter());
+					StackPC.add(getProgrammCounter());
 					setProgramCounter(4);
 					setBit(0, 0xb);
 				}
@@ -1203,7 +1203,7 @@ public class PicSimModel {
 			// EEPROM-Interrupt
 			case 4:
 				if (checkBitSet(6, 0xb)) {
-					STACK.add(getProgrammCounter());
+					StackPC.add(getProgrammCounter());
 					setProgramCounter(4);
 				}
 				break;
@@ -1511,4 +1511,8 @@ public class PicSimModel {
 	public void incrPrescaler() {
 		prescaler++;
 	}
+	public int getStackSize(){
+		return StackPC.size();
+	}
+	
 }

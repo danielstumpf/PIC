@@ -12,10 +12,7 @@ import dhbw.sysnprog.pic.view.PicSimView;
  * @author Daniel
  *
  */
-/**
- * @author Daniel
- *
- */
+
 public class PicSimController {
 	private PicSimView view;
 	private PicSimModel model;
@@ -404,7 +401,7 @@ public class PicSimController {
 		// Speichertabelle wird mit Werten aus dem Register-Array gesetzt
 		ReloadTable();
 
-		// Status setzen
+		// Status, Intcon, Option setzen
 		view.setStatusValue(model.getStatus());
 		view.setIntconValue(model.getIntcon());
 		view.setOptionValue(model.getOption());
@@ -423,12 +420,15 @@ public class PicSimController {
 		view.setPclValue(String.format("%02d", model.getProgrammCounter() & 0xFF));
 		view.setPcValue(String.format("%04d", model.getProgrammCounter()));
 
+		
 		// Stack wird aktualisiert
-		if (!model.STACK.isEmpty()) {
-			Integer[] temp = new Integer[model.STACK.size()];
-			model.STACK.toArray(temp);
+		if (!model.StackPC.isEmpty()) {
+			Integer[] temp = new Integer[model.getStackSize()];
+			model.StackPC.toArray(temp);
+			
 			view.stackClear();
-			for (int i = 0; i < model.STACK.size(); i++) {
+			int size = model.getStackSize();
+			for (int i = 0; i < size; i++) {
 				view.stackAdd(temp[i]);
 			}
 		}
