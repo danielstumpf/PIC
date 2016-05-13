@@ -23,10 +23,6 @@ public class PicSimModel {
 	 */
 	public int sprung;
 	/**
-	 * Programmzähler
-	 */
-	private int PC = 0;
-	/**
 	 * Laufzeit
 	 */
 	private long runningTime = 0;
@@ -52,10 +48,10 @@ public class PicSimModel {
 
 	private int portA;
 	private int portB;
+	private int prescaler;
 	/**
 	 * true = counter-Modus false = timer-Modus
 	 */
-	private int prescaler;
 	private boolean mode;
 
 	/**
@@ -186,7 +182,7 @@ public class PicSimModel {
 	 *            Integer Wert des neuen Programmzählers
 	 */
 	public void setProgramCounter(int counter) {
-		PC = counter;
+		setRegisterEntry(2, counter);
 	}
 
 	/**
@@ -195,7 +191,7 @@ public class PicSimModel {
 	 * @return Programmzähler als Integer-Wert
 	 */
 	public int getProgrammCounter() {
-		return PC;
+		return getRegisterEntry(2);
 	}
 
 	/**
@@ -230,6 +226,7 @@ public class PicSimModel {
 	 */
 	public void setStatus(int value) {
 		registerArray[3] = value;
+		registerArray[131] = value;
 	}
 
 	/**
@@ -238,7 +235,7 @@ public class PicSimModel {
 	public int getOption() {
 		return registerArray[0x81];
 	}
-	
+
 	/**
 	 * Setzt den übergebenen Wert im Options-Register
 	 * 
@@ -248,7 +245,7 @@ public class PicSimModel {
 	public void setOption(int value) {
 		registerArray[0x81] = value;
 	}
-	
+
 	/**
 	 * Setzt den übergebenen Wert im Intcon-Register
 	 * 
@@ -258,14 +255,14 @@ public class PicSimModel {
 	public void setIntcon(int value) {
 		registerArray[0xb] = value;
 	}
-	
+
 	/**
 	 * @return den Speicherinhalt des Intcon-Registers
 	 */
 	public int getIntcon() {
 		return registerArray[0xb];
 	}
-	
+
 	/**
 	 * Setzt den Speicherinhalt an der Stelle "index" auf den Wert "value"
 	 * 
@@ -275,7 +272,13 @@ public class PicSimModel {
 	 *            Integer Wert des zu setzenden Speicherwertes
 	 */
 	public void setRegisterEntry(int index, int value) {
+		if (index == 1) {
+			System.out.println("Index=1");
+		}
 		if (checkBitSet(5, 3)) {
+			if (2 == index) {
+				registerArray[index] = value;
+			}
 			// Wenn das Bit für Bankumschaltung gesetzt ist
 			if (index == 0) {
 				value = value & 0b11111111;
@@ -283,7 +286,10 @@ public class PicSimModel {
 
 			} else {
 				value = value & 0b11111111;
-				registerArray[index + 128] = value;
+				if (129 > index) {
+					index += 128;
+				}
+				registerArray[index] = value;
 			}
 		} else {
 			if (index == 0) {
@@ -306,6 +312,10 @@ public class PicSimModel {
 	 *            Integer Wert des zu setzenden Speicherwertes
 	 */
 	public void setRegisterEntryOneBit(int index, int value) {
+		if(index==1){
+			System.out.println("index==1");
+		}
+		
 		if (index == 0) {
 			value = value & 0b11111111;
 			registerArray[registerArray[4]] = value;
@@ -341,7 +351,6 @@ public class PicSimModel {
 		registerW = 0;
 		StackPC.clear();
 		sprung = 0;
-		PC = 0;
 		codeList.clear();
 		programFilePath = "";
 		takt = 4000;
@@ -547,19 +556,19 @@ public class PicSimModel {
 		int lit_K_temp = lit_K & 0b011111111;
 		int value = lit_K_temp + registerW;
 		if (value > 255) {
-			set_C(true);
+			setC(true);
 		} else {
-			set_C(false);
+			setC(false);
 		}
 		if ((((lit_K_temp & 0b1000) + (registerW & 0b1000)) == 16)) {
-			set_DC(true);
+			setDC(true);
 		} else {
-			set_DC(false);
+			setDC(false);
 		}
 		if (value == 0) {
-			set_Z(true);
+			setZ(true);
 		} else {
-			set_Z(false);
+			setZ(false);
 		}
 		registerW = value;
 	}
@@ -577,16 +586,26 @@ public class PicSimModel {
 		int adress = d_f & 0b01111111;
 		int value = getRegisterEntry(adress);
 		int result = registerW + value;
-		if (d == 0) {
+		if (0xFF < result) {
+			setC(true);
+		} else {
+			setC(false);
+		}
+		if (0xF < ((registerW & 0xF) + (value & 0xF))) {
+			setDC(true);
+		} else {
+			setDC(false);
+		}
+		result = result & 0xFF;
+		if (0 == d) {
 			registerW = result;
 		} else {
 			setRegisterEntry(adress, result);
 		}
-		if (result > 255) {
-			set_C(true);
-		}
-		if (result == 0) {
-			set_Z(true);
+		if (0 == result) {
+			setZ(true);
+		} else {
+			setZ(false);
 		}
 	}
 
@@ -600,7 +619,7 @@ public class PicSimModel {
 	private void do_andlw(int lit_K) {
 		int value = registerW & lit_K;
 		if (value == 0) {
-			set_Z(true);
+			setZ(true);
 		}
 		registerW = value;
 	}
@@ -624,7 +643,7 @@ public class PicSimModel {
 			setRegisterEntry(adress, result);
 		}
 		if (result == 0) {
-			set_Z(true);
+			setZ(true);
 		}
 	}
 
@@ -637,7 +656,7 @@ public class PicSimModel {
 	private void do_bcf(int b_f) {
 		int bit = (b_f & 0b1110000000) / 128;
 		int adress = b_f & 0b0001111111;
-		clear_Bit(bit, adress);
+		clearBit(bit + 1, adress);
 	}
 
 	/**
@@ -649,13 +668,13 @@ public class PicSimModel {
 	private void do_bsf(int b_f) {
 		int bit = (b_f & 0b1110000000) / 128;
 		int adress = b_f & 0b0001111111;
-		setBit(bit, adress);
+		setBit(bit + 1, adress);
 	}
 
 	/**
 	 * 
 	 * If bit 'b' in register 'f' is '1' the the next instruction is executed.
-	 * If bit 'b' in register 'f' is '0' then the next unstruction is discarded
+	 * If bit 'b' in register 'f' is '0' then the next instruction is discarded
 	 * and a NOP is executed instead, making this a 2Tcy instruction
 	 * 
 	 * @param b_f
@@ -664,6 +683,7 @@ public class PicSimModel {
 		int adress = b_f & 0b0001111111;
 		int bit = (b_f & 0b1110000000) / 128;
 		if (!checkBitSet(bit, adress)) {
+			do_nop();
 			setProgramCounter(getProgrammCounter() + 1);
 		}
 	}
@@ -705,7 +725,7 @@ public class PicSimModel {
 	 */
 	private void do_clrf(int f) {
 		setRegisterEntry(f, 0);
-		set_Z(true);
+		setZ(true);
 	}
 
 	/**
@@ -716,7 +736,7 @@ public class PicSimModel {
 	 */
 	private void do_clrw(int value) {
 		registerW = 0b0;
-		set_Z(true);
+		setZ(true);
 	}
 
 	/**
@@ -746,7 +766,9 @@ public class PicSimModel {
 			setRegisterEntry(adress, registerW);
 		}
 		if ((value & 0xFF) == 0) {
-			set_Z(true);
+			setZ(true);
+		} else {
+			setZ(false);
 		}
 	}
 
@@ -758,8 +780,23 @@ public class PicSimModel {
 	 * 
 	 */
 	private void do_decf(int f_d) {
-		int value = (getRegisterEntry(f_d) - 1);
-		setRegisterEntry(f_d, value);
+		int d = f_d & 0b10000000;
+		int address = f_d & 0b01111111;
+		int value = (getRegisterEntry(address) - 1);
+
+		if (0 > value) {
+			value = 0xFF;
+		}
+		if (0 == value) {
+			setZ(true);
+		} else {
+			setZ(false);
+		}
+		if (0 == d) {
+			registerW = value & 0xFF;
+		} else {
+			setRegisterEntry(address, value & 0xFF);
+		}
 	}
 
 	/**
@@ -814,12 +851,12 @@ public class PicSimModel {
 		int d = f_d & 0b10000000;
 		int adress = f_d & 0b01111111;
 		int value = getRegisterEntry(adress);
-		if (get_Z()) {
-			set_Z(false);
+		if (getZ()) {
+			setZ(false);
 
 		} else {
 			if (value == 255) {
-				set_Z(true);
+				setZ(true);
 			}
 		}
 
@@ -864,7 +901,7 @@ public class PicSimModel {
 	private void do_iorlw(int lit_K) {
 		int value = registerW | lit_K;
 		if (value == 0) {
-			set_Z(true);
+			setZ(true);
 		}
 		registerW = value;
 	}
@@ -887,7 +924,9 @@ public class PicSimModel {
 			setRegisterEntry(adress, value);
 		}
 		if (value == 0) {
-			set_Z(true);
+			setZ(true);
+		} else {
+			setZ(false);
 		}
 	}
 
@@ -908,7 +947,7 @@ public class PicSimModel {
 			registerW = value;
 		}
 		if (value == 0) {
-			set_Z(true);
+			setZ(true);
 		}
 	}
 
@@ -993,13 +1032,15 @@ public class PicSimModel {
 		int adress = f_d & 0b01111111;
 		int value = getRegisterEntry(adress);
 		value = value << 1;
-		if (get_C() == 1) {
+		if (1 == getC()) {
 			value += 1;
 		}
-		if ((value & 0b100000000) == 256) {
-			set_C(true);
-			value = value & 0b011111111;
+		if ((value & 0x100) == 256) {
+			setC(true);
+		} else {
+			setC(false);
 		}
+		value = value & 0xFF;
 		if (d == 0) {
 			registerW = value;
 		} else {
@@ -1019,15 +1060,17 @@ public class PicSimModel {
 		int d = f_d & 0b10000000;
 		int adress = f_d & 0b01111111;
 		int value = getRegisterEntry(adress);
-		if (get_C() == 1) {
+		if (1 == getC()) {
 			value += 256;
 		}
-		if ((value & 0b000000001) == 1) {
-			set_C(true);
+		if ((value & 0b00000001) == 1) {
+			setC(true);
 			value = value & 0b111111110;
+		} else {
+			setC(false);
 		}
 		value = value >> 1;
-		if (d == 0) {
+		if (0 == d) {
 			registerW = value;
 		} else {
 			setRegisterEntry(adress, value);
@@ -1058,21 +1101,22 @@ public class PicSimModel {
 	private void do_sublw(int lit_K) {
 		int temp = lit_K & 0b011111111;
 
-		int value = temp - registerW;
+		int value = temp + ~registerW + 1;
+		int dc = temp & 0xF + ((~registerW) & 0xF);
 		if (value >= 0) {
-			set_C(true);
+			setC(true);
 		} else {
-			set_C(false);
+			setC(false);
 		}
-		if ((((temp & 0b10000) - (registerW & 0b10000)) == 0) && ((value & 0b10000) == 0)) {
-			set_DC(true);
+		if (8 < dc) {
+			setDC(true);
 		} else {
-			set_DC(false);
+			setDC(false);
 		}
 		if (value == 0) {
-			set_Z(true);
+			setZ(true);
 		} else {
-			set_Z(false);
+			setZ(false);
 		}
 		registerW = value;
 	}
@@ -1088,17 +1132,34 @@ public class PicSimModel {
 	private void do_subwf(int f_d) {
 		int d = f_d & 0b10000000;
 		int adress = f_d & 0b01111111;
-		int value = getRegisterEntry(adress) - registerW;
+		int registerEntry = getRegisterEntry(adress);
+		int regW = ~registerW;
+		int value = registerEntry + regW + 1;
+
+		int dc = (registerEntry & 0xF) + ((regW) & 0xF);
+
+		if (value >= 0) {
+			setC(true);
+		} else {
+			setC(false);
+		}
+		if (8 < dc) {
+			setDC(true);
+		} else {
+			setDC(false);
+		}
+
+		value = value & 0xFF;
 		if (d == 0) {
 			registerW = value;
 		} else {
 			setRegisterEntry(adress, value);
 		}
-		if (value > 255) {
-			set_C(true);
-		}
+
 		if (value == 0) {
-			set_Z(true);
+			setZ(true);
+		} else {
+			setZ(false);
 		}
 	}
 
@@ -1133,9 +1194,9 @@ public class PicSimModel {
 	private void do_xorlw(int lit_K) {
 		int value = registerW ^ lit_K;
 		if (value == 0) {
-			set_Z(true);
+			setZ(true);
 		} else {
-			set_Z(false);
+			setZ(false);
 		}
 		registerW = value;
 	}
@@ -1152,15 +1213,16 @@ public class PicSimModel {
 		int d = f_d & 0b10000000;
 		int adress = f_d & 0b01111111;
 		int value = getRegisterEntry(adress);
-		int result = registerW | value;
+		int result = registerW ^ value;
 		if (d == 0) {
 			registerW = result;
 		} else {
 			setRegisterEntry(adress, result);
 		}
-
 		if (result == 0) {
-			set_Z(true);
+			setZ(true);
+		} else {
+			setZ(false);
 		}
 	}
 
@@ -1214,8 +1276,8 @@ public class PicSimModel {
 	/**
 	 * @return Wert des C-Bits
 	 */
-	public int get_C() {
-		if (checkBitSet(1, 3)) {
+	public int getC() {
+		if (checkBitSet(0, 3)) {
 			return 1;
 		} else {
 			return 0;
@@ -1229,11 +1291,11 @@ public class PicSimModel {
 	 *            boolean, gibt an, ob C gesetzt werden soll oder nicht
 	 * 
 	 */
-	public void set_C(boolean s) {
+	public void setC(boolean s) {
 		if (s) {
 			setBit(1, 3);
 		} else {
-			clear_Bit(1, 3);
+			clearBit(1, 3);
 		}
 	}
 
@@ -1255,18 +1317,18 @@ public class PicSimModel {
 	 *            boolean, gibt an, ob DC gesetzt werden soll oder nicht
 	 * 
 	 */
-	public void set_DC(boolean s) {
+	public void setDC(boolean s) {
 		if (s) {
 			setBit(2, 3);
 		} else {
-			clear_Bit(2, 3);
+			clearBit(2, 3);
 		}
 	}
 
 	/**
 	 * @return Wert des Z-Bits
 	 */
-	public boolean get_Z() {
+	public boolean getZ() {
 		if (checkBitSet(3, 3)) {
 			return true;
 		} else {
@@ -1281,11 +1343,11 @@ public class PicSimModel {
 	 *            boolean, gibt an, ob Z gesetzt werden soll oder nicht
 	 * 
 	 */
-	public void set_Z(boolean s) {
+	public void setZ(boolean s) {
 		if (s) {
 			setBit(3, 3);
 		} else {
-			clear_Bit(3, 3);
+			clearBit(3, 3);
 		}
 	}
 
@@ -1360,7 +1422,7 @@ public class PicSimModel {
 	 * @param adress
 	 *            Gibt die Adresse an, an der das Bit gelöscht wird.
 	 */
-	public void clear_Bit(int position, int adress) {
+	public void clearBit(int position, int adress) {
 		switch (position) {
 		case 1: {
 			setRegisterEntryOneBit(adress, (getRegisterEntry(adress) & 0b11111110));
@@ -1479,7 +1541,6 @@ public class PicSimModel {
 			return false;
 		}
 	}
-	
 
 	public boolean getMode() {
 		return mode;
@@ -1511,8 +1572,9 @@ public class PicSimModel {
 	public void incrPrescaler() {
 		prescaler++;
 	}
-	public int getStackSize(){
+
+	public int getStackSize() {
 		return StackPC.size();
 	}
-	
+
 }

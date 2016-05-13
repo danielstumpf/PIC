@@ -348,12 +348,11 @@ public class PicSimController {
 
 	private void counterMode() {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	/**
-	 * true = Counter-Mode
-	 * false = Timer-Mode
+	 * true = Counter-Mode false = Timer-Mode
 	 */
 	private void chooseMode() {
 		if (model.checkBitSet(5, 0x81)) {
@@ -397,6 +396,9 @@ public class PicSimController {
 
 		// W-Register auf der Benutzeroberfläche setzen
 		view.setWvalue(String.format("%02X", model.registerW & 0xFF));
+		int registerEntry = model.getRegisterEntry(4);
+
+		view.setFsrValue(String.format("%02X", registerEntry & 0xFF));
 
 		// Speichertabelle wird mit Werten aus dem Register-Array gesetzt
 		ReloadTable();
@@ -417,19 +419,19 @@ public class PicSimController {
 
 		// Programmschritte werden aktualisiert
 		view.setSteps(model.getSteps());
-		view.setPclValue(String.format("%02d", model.getProgrammCounter() & 0xFF));
-		view.setPcValue(String.format("%04d", model.getProgrammCounter()));
+		view.setPclValue(String.format("%02X", model.getProgrammCounter() & 0xFF));
+		view.setPcValue(String.format("%04X", model.getProgrammCounter()));
 
-		
+		view.stackClear();
+
 		// Stack wird aktualisiert
 		if (!model.StackPC.isEmpty()) {
 			Integer[] temp = new Integer[model.getStackSize()];
 			model.StackPC.toArray(temp);
-			
 			view.stackClear();
 			int size = model.getStackSize();
 			for (int i = 0; i < size; i++) {
-				view.stackAdd(temp[i]);
+				view.stackAdd(temp);
 			}
 		}
 	}
@@ -462,9 +464,10 @@ public class PicSimController {
 			setRunning(true);
 
 			view.setVisibilityButtons(false, true, true);
-			Thread t1 = new Thread(new PicSimControllerThread_Once(this));
+			Thread t1 = new Thread(new PicSimControllerOneThread(this));
 
 			t1.start();
+			setRunning(false);
 		} else {
 			view.setErrorMsgs("Kein Programm geöffnet.");
 			setRunning(false);
@@ -502,16 +505,17 @@ public class PicSimController {
 
 	public void timerMode() {
 		if (model.checkBitSet(3, 0x81)) {
-			model.setRegisterEntryOneBit(1, model.getRegisterEntry(1) + 1);
+//			model.setRegisterEntryOneBit(1, model.getRegisterEntry(1) + 1);
 
 		} else {
-
+			model.setRegisterEntryOneBit(1, model.getRegisterEntry(1) + 1);
 			int prescaler = model.registerArray[0x81] & 0b00000111;
+			
 			switch (prescaler) {
 
 			case 0:
 				if (model.getPrescaler() == 2) {
-					model.setRegisterEntryOneBit(1, model.getRegisterEntry(1) + 1);
+//					model.setRegisterEntryOneBit(1, model.getRegisterEntry(1) + 1);
 					if (model.registerArray[1] == 0) {
 
 						model.setBit(7, 0xb);
@@ -529,7 +533,7 @@ public class PicSimController {
 			case 1:
 
 				if (model.getPrescaler() == 4) {
-					model.setRegisterEntryOneBit(1, model.getRegisterEntry(1) + 1);
+//					model.setRegisterEntryOneBit(1, model.getRegisterEntry(1) + 1);
 					if (model.registerArray[1] == 0) {
 
 						model.setBit(7, 0xb);
@@ -547,7 +551,7 @@ public class PicSimController {
 				break;
 			case 2:
 				if (model.getPrescaler() == 8) {
-					model.setRegisterEntryOneBit(1, model.getRegisterEntry(1) + 1);
+//					model.setRegisterEntryOneBit(1, model.getRegisterEntry(1) + 1);
 					if (model.registerArray[1] == 0) {
 
 						model.setBit(7, 0xb);
@@ -563,7 +567,7 @@ public class PicSimController {
 				break;
 			case 3:
 				if (model.getPrescaler() == 16) {
-					model.setRegisterEntryOneBit(1, model.getRegisterEntry(1) + 1);
+//					model.setRegisterEntryOneBit(1, model.getRegisterEntry(1) + 1);
 					if (model.registerArray[1] == 0) {
 
 						model.setBit(7, 0xb);
@@ -579,7 +583,7 @@ public class PicSimController {
 				break;
 			case 4:
 				if (model.getPrescaler() == 32) {
-					model.setRegisterEntryOneBit(1, model.getRegisterEntry(1) + 1);
+//					model.setRegisterEntryOneBit(1, model.getRegisterEntry(1) + 1);
 					if (model.registerArray[1] == 0) {
 
 						model.setBit(7, 0xb);
@@ -595,7 +599,7 @@ public class PicSimController {
 				break;
 			case 5:
 				if (model.getPrescaler() == 64) {
-					model.setRegisterEntryOneBit(1, model.getRegisterEntry(1) + 1);
+//					model.setRegisterEntryOneBit(1, model.getRegisterEntry(1) + 1);
 					if (model.registerArray[1] == 0) {
 
 						model.setBit(7, 0xb);
@@ -611,7 +615,7 @@ public class PicSimController {
 				break;
 			case 6:
 				if (model.getPrescaler() == 128) {
-					model.setRegisterEntryOneBit(1, model.getRegisterEntry(1) + 1);
+//					model.setRegisterEntryOneBit(1, model.getRegisterEntry(1) + 1);
 					if (model.registerArray[1] == 0) {
 
 						model.setBit(7, 0xb);
@@ -627,7 +631,7 @@ public class PicSimController {
 				break;
 			case 7:
 				if (model.getPrescaler() == 256) {
-					model.setRegisterEntryOneBit(1, model.getRegisterEntry(1) + 1);
+//					model.setRegisterEntryOneBit(1, model.getRegisterEntry(1) + 1);
 
 					if (model.registerArray[1] == 0) {
 						model.setBit(7, 0xb);
@@ -703,6 +707,9 @@ public class PicSimController {
 	}
 
 	public void writeToRegister(int adress, int value) {
+		if (adress == 1) {
+			System.out.println("Index ist 1");
+		}
 		model.setRegisterEntry(adress, value);
 		ReloadGUI();
 	}

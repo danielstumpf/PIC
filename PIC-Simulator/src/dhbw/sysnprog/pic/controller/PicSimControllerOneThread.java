@@ -1,9 +1,9 @@
 package dhbw.sysnprog.pic.controller;
 
-public class PicSimControllerThread_Once implements Runnable {
+public class PicSimControllerOneThread implements Runnable {
 	private PicSimController controller;
 
-	public PicSimControllerThread_Once(PicSimController controller) {
+	public PicSimControllerOneThread(PicSimController controller) {
 		this.controller = controller;
 	}
 
