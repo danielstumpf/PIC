@@ -4,7 +4,9 @@ import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+
 import org.eclipse.swt.widgets.Display;
+
 import dhbw.sysnprog.pic.model.PicSimModel;
 import dhbw.sysnprog.pic.view.PicSimView;
 
@@ -14,14 +16,14 @@ import dhbw.sysnprog.pic.view.PicSimView;
  */
 
 public class PicSimController {
-	private PicSimView view;
-	private PicSimModel model;
+	private final PicSimView view;
+	private final PicSimModel model;
 	private boolean running;
 
 	public PicSimController(PicSimView view, PicSimModel model) {
 		this.view = view;
 		this.model = model;
-		this.running = false;
+		running = false;
 		model.resetModel();
 		valueOnPowerUp();
 		new PicSimListener(this, view, model);
@@ -29,26 +31,15 @@ public class PicSimController {
 	}
 
 	/**
-	 * Vorbelegung der Registereinträge beim Start des Programms
-	 */
-	void valueOnPowerUp() {
-		model.setRegisterEntry(0x3, 24);
-		model.setRegisterEntry(0x81, 255);
-		model.setRegisterEntry(0x83, 24);
-		model.setRegisterEntry(0x85, 31);
-		model.setRegisterEntry(0x86, 255);
-	}
-
-	/**
 	 * Ändert das entsprechende Bit im Intcon-Register
-	 * 
+	 *
 	 * @param column
 	 *            Spalte, in welcher das Bit geändert werden soll
 	 */
 	protected void changeBitIntconReg(int column) {
 		switch (column) {
 		case 8: {
-			int temp = view.getValueIntconReg() & 0b00000001;
+			final int temp = view.getValueIntconReg() & 0b00000001;
 			if (temp == 0) {
 				model.setIntcon(model.getIntcon() + 1);
 			} else {
@@ -57,7 +48,7 @@ public class PicSimController {
 			break;
 		}
 		case 7: {
-			int temp = view.getValueIntconReg() & 0b00000010;
+			final int temp = view.getValueIntconReg() & 0b00000010;
 			if (temp == 0) {
 				model.setIntcon(model.getIntcon() + 2);
 			} else {
@@ -66,7 +57,7 @@ public class PicSimController {
 			break;
 		}
 		case 6: {
-			int temp = view.getValueIntconReg() & 0b00000100;
+			final int temp = view.getValueIntconReg() & 0b00000100;
 			if (temp == 0) {
 				model.setIntcon(model.getIntcon() + 4);
 			} else {
@@ -75,7 +66,7 @@ public class PicSimController {
 			break;
 		}
 		case 5: {
-			int temp = view.getValueIntconReg() & 0b00001000;
+			final int temp = view.getValueIntconReg() & 0b00001000;
 			if (temp == 0) {
 				model.setIntcon(model.getIntcon() + 8);
 			} else {
@@ -84,7 +75,7 @@ public class PicSimController {
 			break;
 		}
 		case 4: {
-			int temp = view.getValueIntconReg() & 0b00010000;
+			final int temp = view.getValueIntconReg() & 0b00010000;
 			if (temp == 0) {
 				model.setIntcon(model.getIntcon() + 16);
 			} else {
@@ -93,7 +84,7 @@ public class PicSimController {
 			break;
 		}
 		case 3: {
-			int temp = view.getValueIntconReg() & 0b00100000;
+			final int temp = view.getValueIntconReg() & 0b00100000;
 			if (temp == 0) {
 				model.setIntcon(model.getIntcon() + 32);
 			} else {
@@ -102,7 +93,7 @@ public class PicSimController {
 			break;
 		}
 		case 2: {
-			int temp = view.getValueIntconReg() & 0b01000000;
+			final int temp = view.getValueIntconReg() & 0b01000000;
 			if (temp == 0) {
 				model.setIntcon(model.getIntcon() + 64);
 			} else {
@@ -111,7 +102,7 @@ public class PicSimController {
 			break;
 		}
 		case 1: {
-			int temp = view.getValueIntconReg() & 0b10000000;
+			final int temp = view.getValueIntconReg() & 0b10000000;
 			if (temp == 0) {
 				model.setIntcon(model.getIntcon() + 128);
 			} else {
@@ -128,14 +119,14 @@ public class PicSimController {
 
 	/**
 	 * Ändert das entsprechende Bit im Options-Register
-	 * 
+	 *
 	 * @param column
 	 *            Spalte, in welcher das Bit geändert werden soll
 	 */
 	protected void changeBitOptionReg(int column) {
 		switch (column) {
 		case 8: {
-			int temp = view.getValueOptionReg() & 0b00000001;
+			final int temp = view.getValueOptionReg() & 0b00000001;
 			if (temp == 0) {
 				model.setOption(model.getOption() + 1);
 			} else {
@@ -144,7 +135,7 @@ public class PicSimController {
 			break;
 		}
 		case 7: {
-			int temp = view.getValueOptionReg() & 0b00000010;
+			final int temp = view.getValueOptionReg() & 0b00000010;
 			if (temp == 0) {
 				model.setOption(model.getOption() + 2);
 			} else {
@@ -153,7 +144,7 @@ public class PicSimController {
 			break;
 		}
 		case 6: {
-			int temp = view.getValueOptionReg() & 0b00000100;
+			final int temp = view.getValueOptionReg() & 0b00000100;
 			if (temp == 0) {
 				model.setOption(model.getOption() + 4);
 			} else {
@@ -162,7 +153,7 @@ public class PicSimController {
 			break;
 		}
 		case 5: {
-			int temp = view.getValueOptionReg() & 0b00001000;
+			final int temp = view.getValueOptionReg() & 0b00001000;
 			if (temp == 0) {
 				model.setOption(model.getOption() + 8);
 			} else {
@@ -171,7 +162,7 @@ public class PicSimController {
 			break;
 		}
 		case 4: {
-			int temp = view.getValueOptionReg() & 0b00010000;
+			final int temp = view.getValueOptionReg() & 0b00010000;
 			if (temp == 0) {
 				model.setOption(model.getOption() + 16);
 			} else {
@@ -180,7 +171,7 @@ public class PicSimController {
 			break;
 		}
 		case 3: {
-			int temp = view.getValueOptionReg() & 0b00100000;
+			final int temp = view.getValueOptionReg() & 0b00100000;
 			if (temp == 0) {
 				model.setOption(model.getOption() + 32);
 			} else {
@@ -189,7 +180,7 @@ public class PicSimController {
 			break;
 		}
 		case 2: {
-			int temp = view.getValueOptionReg() & 0b01000000;
+			final int temp = view.getValueOptionReg() & 0b01000000;
 			if (temp == 0) {
 				model.setOption(model.getOption() + 64);
 			} else {
@@ -198,7 +189,7 @@ public class PicSimController {
 			break;
 		}
 		case 1: {
-			int temp = view.getValueOptionReg() & 0b10000000;
+			final int temp = view.getValueOptionReg() & 0b10000000;
 			if (temp == 0) {
 				model.setOption(model.getOption() + 128);
 			} else {
@@ -214,15 +205,103 @@ public class PicSimController {
 	}
 
 	/**
+	 * Ändert das entsprechende Bit von PortA
+	 *
+	 * @param column
+	 *            Spalte, in der das Bit geändert werden soll
+	 */
+	void changeBitPortA(int column) {
+		switch (column) {
+		case 8: {
+			final int temp = view.getValuePortA() & 0b00000001;
+			if (temp == 0) {
+				model.setPortA(model.getPortA() + 1);
+			} else {
+				model.setPortA(model.getPortA() - 1);
+			}
+			break;
+		}
+		case 7: {
+			final int temp = view.getValuePortA() & 0b00000010;
+			if (temp == 0) {
+				model.setPortA(model.getPortA() + 2);
+			} else {
+				model.setPortA(model.getPortA() - 2);
+			}
+			break;
+		}
+		case 6: {
+			final int temp = view.getValuePortA() & 0b00000100;
+			if (temp == 0) {
+				model.setPortA(model.getPortA() + 4);
+			} else {
+				model.setPortA(model.getPortA() - 4);
+			}
+			break;
+		}
+		case 5: {
+			final int temp = view.getValuePortA() & 0b00001000;
+			if (temp == 0) {
+				model.setPortA(model.getPortA() + 8);
+			} else {
+				model.setPortA(model.getPortA() - 8);
+			}
+			break;
+		}
+		case 4: {
+			final int temp = view.getValuePortA() & 0b00010000;
+			if (temp == 0) {
+				model.setPortA(model.getPortA() + 16);
+			} else {
+				model.setPortA(model.getPortA() - 16);
+			}
+			break;
+		}
+		case 3: {
+			final int temp = view.getValuePortA() & 0b00100000;
+			if (temp == 0) {
+				model.setPortA(model.getPortA() + 32);
+			} else {
+				model.setPortA(model.getPortA() - 32);
+			}
+			break;
+		}
+		case 2: {
+			final int temp = view.getValuePortA() & 0b01000000;
+			if (temp == 0) {
+				model.setPortA(model.getPortA() + 64);
+			} else {
+				model.setPortA(model.getPortA() - 64);
+			}
+			break;
+		}
+		case 1: {
+			final int temp = view.getValuePortA() & 0b10000000;
+			if (temp == 0) {
+				model.setPortA(model.getPortA() + 128);
+			} else {
+				model.setPortA(model.getPortA() - 128);
+			}
+			break;
+		}
+		default: {
+			break;
+		}
+		}
+		model.registerArray[5] = model.getPortA();
+		ReloadGUI();
+	}
+
+	/**
 	 * Ändert das entsprechende Bit im Status-Register
-	 * 
+	 *
 	 * @param column
 	 *            Spalte, in welcher das Bit geändert werden soll
 	 */
 	protected void changeBitStatusReg(int column) {
 		switch (column) {
 		case 8: {
-			int temp = view.getValueStatusReg() & 0b00000001;
+			final int temp = view.getValueStatusReg() & 0b00000001;
 			if (temp == 0) {
 				model.setStatus(model.getStatus() + 1);
 			} else {
@@ -231,7 +310,7 @@ public class PicSimController {
 			break;
 		}
 		case 7: {
-			int temp = view.getValueStatusReg() & 0b00000010;
+			final int temp = view.getValueStatusReg() & 0b00000010;
 			if (temp == 0) {
 				model.setStatus(model.getStatus() + 2);
 			} else {
@@ -240,7 +319,7 @@ public class PicSimController {
 			break;
 		}
 		case 6: {
-			int temp = view.getValueStatusReg() & 0b00000100;
+			final int temp = view.getValueStatusReg() & 0b00000100;
 			if (temp == 0) {
 				model.setStatus(model.getStatus() + 4);
 			} else {
@@ -249,7 +328,7 @@ public class PicSimController {
 			break;
 		}
 		case 5: {
-			int temp = view.getValueStatusReg() & 0b00001000;
+			final int temp = view.getValueStatusReg() & 0b00001000;
 			if (temp == 0) {
 				model.setStatus(model.getStatus() + 8);
 			} else {
@@ -258,7 +337,7 @@ public class PicSimController {
 			break;
 		}
 		case 4: {
-			int temp = view.getValueStatusReg() & 0b00010000;
+			final int temp = view.getValueStatusReg() & 0b00010000;
 			if (temp == 0) {
 				model.setStatus(model.getStatus() + 16);
 			} else {
@@ -267,7 +346,7 @@ public class PicSimController {
 			break;
 		}
 		case 3: {
-			int temp = view.getValueStatusReg() & 0b00100000;
+			final int temp = view.getValueStatusReg() & 0b00100000;
 			if (temp == 0) {
 				model.setStatus(model.getStatus() + 32);
 			} else {
@@ -276,7 +355,7 @@ public class PicSimController {
 			break;
 		}
 		case 2: {
-			int temp = view.getValueStatusReg() & 0b01000000;
+			final int temp = view.getValueStatusReg() & 0b01000000;
 			if (temp == 0) {
 				model.setStatus(model.getStatus() + 64);
 			} else {
@@ -285,7 +364,7 @@ public class PicSimController {
 			break;
 		}
 		case 1: {
-			int temp = view.getValueStatusReg() & 0b10000000;
+			final int temp = view.getValueStatusReg() & 0b10000000;
 			if (temp == 0) {
 				model.setStatus(model.getStatus() + 128);
 			} else {
@@ -301,54 +380,111 @@ public class PicSimController {
 	}
 
 	/**
-	 * @return boolean gibt an, ob Programm läuft oder pausiert ist
+	 * Ändert das entsprechende Bit von PortB
+	 *
+	 * @param column
+	 *            Spalte, in der das Bit geändert werden soll
 	 */
-	public boolean getRunning() {
-		return running;
-	}
+	void changeTheRegisterFromPortB(int column) {
+		switch (column) {
+		case 8: {
+			final int temp = view.getValuePortB() & 0b00000001;
+			if (temp == 0) {
+				model.setPortB(model.getPortB() + 1);
+			} else {
+				model.setPortB(model.getPortB() - 1);
+			}
 
-	/**
-	 * @param s
-	 *            setzt das Programm auf laufend oder nicht laufend
-	 */
-	public void setRunning(boolean s) {
-		running = s;
-	}
+			model.setBit(4, 0xb);
 
-	/**
-	 * @return die aktuelle Frequenz, mit der das Programm läuft
-	 */
-	public int getFrequency() {
-		return model.getTakt();
-	}
-
-	/**
-	 * Startet das geladene Programm
-	 * 
-	 * @param takt
-	 * @throws InterruptedException
-	 */
-	public void start_programm(int takt) throws InterruptedException {
-		if (model.getProgrammCounter() == model.codeList.size()) {
-			Thread.sleep(takt);
-			model.setProgramCounter(0);
-			startFunction();
-		} else {
-			Thread.sleep(takt);
-			startFunction();
+			model.doInterrupt(1);
+			break;
 		}
-		if (model.getMode()) {
-			counterMode();
-
-		} else {
-			timerMode();
+		case 7: {
+			final int temp = view.getValuePortB() & 0b00000010;
+			if (temp == 0) {
+				model.setPortB(model.getPortB() + 2);
+			} else {
+				model.setPortB(model.getPortB() - 2);
+			}
+			break;
 		}
-		chooseMode();
-	}
-
-	private void counterMode() {
-		// TODO Auto-generated method stub
-
+		case 6: {
+			final int temp = view.getValuePortB() & 0b00000100;
+			if (temp == 0) {
+				model.setPortB(model.getPortB() + 4);
+			} else {
+				model.setPortB(model.getPortB() - 4);
+			}
+			break;
+		}
+		case 5: {
+			final int temp = view.getValuePortB() & 0b00001000;
+			if (temp == 0) {
+				model.setPortB(model.getPortB() + 8);
+			} else {
+				model.setPortB(model.getPortB() - 8);
+			}
+			break;
+		}
+		case 4: {
+			final int temp = view.getValuePortB() & 0b00010000;
+			if (temp == 0) {
+				model.setPortB(model.getPortB() + 16);
+			} else {
+				model.setPortB(model.getPortB() - 16);
+			}
+			model.setBit(7, 0xb);
+			model.setBit(3, 0xb);
+			model.setBit(0, 0xb);
+			model.doInterrupt(3);
+			break;
+		}
+		case 3: {
+			final int temp = view.getValuePortB() & 0b00100000;
+			if (temp == 0) {
+				model.setPortB(model.getPortB() + 32);
+			} else {
+				model.setPortB(model.getPortB() - 32);
+			}
+			model.setBit(7, 0xb);
+			model.setBit(3, 0xb);
+			model.setBit(0, 0xb);
+			model.doInterrupt(3);
+			break;
+		}
+		case 2: {
+			final int temp = view.getValuePortB() & 0b01000000;
+			if (temp == 0) {
+				model.setPortB(model.getPortB() + 64);
+			} else {
+				model.setPortB(model.getPortB() - 64);
+			}
+			model.setBit(7, 0xb);
+			model.setBit(3, 0xb);
+			model.setBit(0, 0xb);
+			model.doInterrupt(3);
+			break;
+		}
+		case 1: {
+			final int temp = view.getValuePortB() & 0b10000000;
+			if (temp == 0) {
+				model.setPortB(model.getPortB() + 128);
+			} else {
+				model.setPortB(model.getPortB() - 128);
+			}
+			model.setBit(7, 0xb);
+			model.setBit(3, 0xb);
+			model.setBit(0, 0xb);
+			model.doInterrupt(3);
+			break;
+		}
+		default: {
+			break;
+		}
+		}
+		model.registerArray[6] = model.getPortB();
+		ReloadGUI();
 	}
 
 	/**
@@ -362,29 +498,85 @@ public class PicSimController {
 		}
 	}
 
+	private void counterMode() {
+		// TODO Auto-generated method stub
+
+	}
+
 	/**
-	 * Startet die aktuelle Funktion
-	 * 
-	 * @throws InterruptedException
+	 * Erhöht die Anzahl der durchgeführten Schritte um 1
 	 */
-	public void startFunction() throws InterruptedException {
-		Display.getDefault().syncExec(new Runnable() {
-			public void run() {
-				for (int i = 0; i < view.breakpointList.size(); i++) {
-					if (view.getSelectedLineIndex() == view.breakpointList.get(i) - 1) {
-						running = false;
+	public void countSteps() {
+		model.setSteps();
+	}
+
+	/**
+	 * Geht durch die kompletten Inhalte und entfernt unrelevante Codezeilen
+	 * sodass später nur Zeilen mit ausführbarem Befehlscode enthalten sind
+	 */
+	public void filterCode() {
+		for (int i = 0; i < view.getListModelSize(); i++) {
+			final String temp = view.getElementListModel(i);
+			if (temp.startsWith("     ")) {
+				view.remove_ElementListModel(i);
+				i--;
+			}
+		}
+	}
+
+	/**
+	 * @return die aktuelle Frequenz, mit der das Programm läuft
+	 */
+	public int getFrequency() {
+		return model.getTakt();
+	}
+
+	/**
+	 * @return boolean gibt an, ob Programm läuft oder pausiert ist
+	 */
+	public boolean getRunning() {
+		return running;
+	}
+
+	/**
+	 * Lädt die Datei und fügt sie in die Inputlist ein
+	 *
+	 * @param filePath
+	 *            Pfad zur Datei, welche das Programm enthält
+	 */
+	void loadFile(String filePath) {
+		running = false;
+		view.clearListModel();
+		model.resetModel();
+		valueOnPowerUp();
+
+		ReloadGUI();
+
+		BufferedReader in;
+		String zeile = null;
+		model.setProgramFilePath(filePath);
+
+		try {
+			in = new BufferedReader(new FileReader(model.getProgramFilePath()));
+			try {
+				while ((zeile = in.readLine()) != null) {
+					try {
+						view.inputList.add(zeile);
+					} catch (final Exception e1) {
+						System.out.println(e1);
 					}
 				}
 
-				try {
-					model.doAction(model.codeList.get(model.getProgrammCounter()));
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-				}
-				model.setProgramCounter(model.getProgrammCounter() + 1);
-				ReloadGUI();
+			} catch (final IOException e) {
+				e.printStackTrace();
 			}
-		});
+		} catch (final FileNotFoundException e) {
+			e.printStackTrace();
+		}
+		view.setVisibilityButtons(false, true, true);
+		if (view.getListModelSize() == 0) {
+			view.setErrorMsgs("Kein Programm enthalten.");
+		}
 	}
 
 	/**
@@ -396,7 +588,7 @@ public class PicSimController {
 
 		// W-Register auf der Benutzeroberfläche setzen
 		view.setWvalue(String.format("%02X", model.registerW & 0xFF));
-		int registerEntry = model.getRegisterEntry(4);
+		final int registerEntry = model.getRegisterEntry(4);
 
 		view.setFsrValue(String.format("%02X", registerEntry & 0xFF));
 
@@ -426,10 +618,10 @@ public class PicSimController {
 
 		// Stack wird aktualisiert
 		if (!model.StackPC.isEmpty()) {
-			Integer[] temp = new Integer[model.getStackSize()];
+			final Integer[] temp = new Integer[model.getStackSize()];
 			model.StackPC.toArray(temp);
 			view.stackClear();
-			int size = model.getStackSize();
+			final int size = model.getStackSize();
 			for (int i = 0; i < size; i++) {
 				view.stackAdd(temp);
 			}
@@ -452,6 +644,25 @@ public class PicSimController {
 		}
 	}
 
+	public void runAllFunctions() {
+		if (view.getListModelSize() > 0) {
+
+			model.setStartTime(System.currentTimeMillis());
+			start();
+
+			setRunning(true);
+
+			view.setVisibilityButtons(false, true, true);
+			final Thread t1 = new Thread(new PicSimControllerThread(this));
+
+			t1.start();
+		} else {
+			view.setErrorMsgs("Kein Programm geöffnet.");
+			setRunning(false);
+		}
+
+	}
+
 	/**
 	 * Ausführen einer Funktion
 	 */
@@ -464,7 +675,7 @@ public class PicSimController {
 			setRunning(true);
 
 			view.setVisibilityButtons(false, true, true);
-			Thread t1 = new Thread(new PicSimControllerOneThread(this));
+			final Thread t1 = new Thread(new PicSimControllerOneThread(this));
 
 			t1.start();
 			setRunning(false);
@@ -472,6 +683,22 @@ public class PicSimController {
 			view.setErrorMsgs("Kein Programm geöffnet.");
 			setRunning(false);
 		}
+	}
+
+	/**
+	 * @param s
+	 *            setzt das Programm auf laufend oder nicht laufend
+	 */
+	public void setRunning(boolean s) {
+		running = s;
+	}
+
+	/**
+	 * Setzt die aktuelle Laufzeit. Dabei wird die Differenz der aktuellen Zeit
+	 * zur Startzeit gesetzt.
+	 */
+	public void setTime() {
+		model.setRunningTime((System.currentTimeMillis()) - (model.getStartTime()));
 	}
 
 	/**
@@ -484,38 +711,69 @@ public class PicSimController {
 		}
 	}
 
-	public void runAllFunctions() {
-		if (view.getListModelSize() > 0) {
-
-			model.setStartTime(System.currentTimeMillis());
-			start();
-
-			setRunning(true);
-
-			view.setVisibilityButtons(false, true, true);
-			Thread t1 = new Thread(new PicSimControllerThread(this));
-
-			t1.start();
+	/**
+	 * Startet das geladene Programm
+	 *
+	 * @param takt
+	 * @throws InterruptedException
+	 */
+	public void start_programm(int takt) throws InterruptedException {
+		if (model.getProgrammCounter() == model.codeList.size()) {
+			Thread.sleep(takt);
+			model.setProgramCounter(0);
+			startFunction();
 		} else {
-			view.setErrorMsgs("Kein Programm geöffnet.");
-			setRunning(false);
+			Thread.sleep(takt);
+			startFunction();
 		}
+		if (model.getMode()) {
+			counterMode();
 
+		} else {
+			timerMode();
+		}
+		chooseMode();
+	}
+
+	/**
+	 * Startet die aktuelle Funktion
+	 *
+	 * @throws InterruptedException
+	 */
+	public void startFunction() throws InterruptedException {
+		Display.getDefault().syncExec(new Runnable() {
+			@Override
+			public void run() {
+				for (int i = 0; i < view.breakpointList.size(); i++) {
+					if (view.getSelectedLineIndex() == (view.breakpointList.get(i) - 1)) {
+						running = false;
+					}
+				}
+
+				try {
+					model.doAction(model.codeList.get(model.getProgrammCounter()));
+				} catch (final InterruptedException e) {
+					e.printStackTrace();
+				}
+				model.setProgramCounter(model.getProgrammCounter() + 1);
+				ReloadGUI();
+			}
+		});
 	}
 
 	public void timerMode() {
 		if (model.checkBitSet(3, 0x81)) {
-//			model.setRegisterEntryOneBit(1, model.getRegisterEntry(1) + 1);
+			// model.setRegisterEntryOneBit(1, model.getRegisterEntry(1) + 1);
 
 		} else {
-			model.setRegisterEntryOneBit(1, model.getRegisterEntry(1) + 1);
-			int prescaler = model.registerArray[0x81] & 0b00000111;
-			
+			// model.setRegisterEntryOneBit(1, model.getRegisterEntry(1) + 1);
+			final int prescaler = model.registerArray[0x81] & 0b00000111;
+
 			switch (prescaler) {
 
 			case 0:
-				if (model.getPrescaler() == 2) {
-//					model.setRegisterEntryOneBit(1, model.getRegisterEntry(1) + 1);
+				if (model.getPrescaler() == 1) {
+					model.setRegisterEntryOneBit(1, model.getRegisterEntry(1) + 1);
 					if (model.registerArray[1] == 0) {
 
 						model.setBit(7, 0xb);
@@ -532,8 +790,8 @@ public class PicSimController {
 
 			case 1:
 
-				if (model.getPrescaler() == 4) {
-//					model.setRegisterEntryOneBit(1, model.getRegisterEntry(1) + 1);
+				if (model.getPrescaler() == 2) {
+					model.setRegisterEntryOneBit(1, model.getRegisterEntry(1) + 1);
 					if (model.registerArray[1] == 0) {
 
 						model.setBit(7, 0xb);
@@ -550,8 +808,8 @@ public class PicSimController {
 				}
 				break;
 			case 2:
-				if (model.getPrescaler() == 8) {
-//					model.setRegisterEntryOneBit(1, model.getRegisterEntry(1) + 1);
+				if (model.getPrescaler() == 4) {
+					model.setRegisterEntryOneBit(1, model.getRegisterEntry(1) + 1);
 					if (model.registerArray[1] == 0) {
 
 						model.setBit(7, 0xb);
@@ -566,8 +824,8 @@ public class PicSimController {
 				}
 				break;
 			case 3:
-				if (model.getPrescaler() == 16) {
-//					model.setRegisterEntryOneBit(1, model.getRegisterEntry(1) + 1);
+				if (model.getPrescaler() == 8) {
+					model.setRegisterEntryOneBit(1, model.getRegisterEntry(1) + 1);
 					if (model.registerArray[1] == 0) {
 
 						model.setBit(7, 0xb);
@@ -582,8 +840,8 @@ public class PicSimController {
 				}
 				break;
 			case 4:
-				if (model.getPrescaler() == 32) {
-//					model.setRegisterEntryOneBit(1, model.getRegisterEntry(1) + 1);
+				if (model.getPrescaler() == 16) {
+					model.setRegisterEntryOneBit(1, model.getRegisterEntry(1) + 1);
 					if (model.registerArray[1] == 0) {
 
 						model.setBit(7, 0xb);
@@ -598,8 +856,8 @@ public class PicSimController {
 				}
 				break;
 			case 5:
-				if (model.getPrescaler() == 64) {
-//					model.setRegisterEntryOneBit(1, model.getRegisterEntry(1) + 1);
+				if (model.getPrescaler() == 32) {
+					model.setRegisterEntryOneBit(1, model.getRegisterEntry(1) + 1);
 					if (model.registerArray[1] == 0) {
 
 						model.setBit(7, 0xb);
@@ -614,8 +872,8 @@ public class PicSimController {
 				}
 				break;
 			case 6:
-				if (model.getPrescaler() == 128) {
-//					model.setRegisterEntryOneBit(1, model.getRegisterEntry(1) + 1);
+				if (model.getPrescaler() == 64) {
+					model.setRegisterEntryOneBit(1, model.getRegisterEntry(1) + 1);
 					if (model.registerArray[1] == 0) {
 
 						model.setBit(7, 0xb);
@@ -630,8 +888,8 @@ public class PicSimController {
 				}
 				break;
 			case 7:
-				if (model.getPrescaler() == 256) {
-//					model.setRegisterEntryOneBit(1, model.getRegisterEntry(1) + 1);
+				if (model.getPrescaler() == 128) {
+					model.setRegisterEntryOneBit(1, model.getRegisterEntry(1) + 1);
 
 					if (model.registerArray[1] == 0) {
 						model.setBit(7, 0xb);
@@ -652,277 +910,14 @@ public class PicSimController {
 	}
 
 	/**
-	 * Geht durch die kompletten Inhalte und entfernt unrelevante Codezeilen
-	 * sodass später nur Zeilen mit ausführbarem Befehlscode enthalten sind
+	 * Vorbelegung der Registereinträge beim Start des Programms
 	 */
-	public void filterCode() {
-		for (int i = 0; i < view.getListModelSize(); i++) {
-			String temp = view.getElementListModel(i);
-			if (temp.startsWith("     ")) {
-				view.remove_ElementListModel(i);
-				i--;
-			}
-		}
-	}
-
-	/**
-	 * Lädt die Datei und fügt sie in die Inputlist ein
-	 * 
-	 * @param filePath
-	 *            Pfad zur Datei, welche das Programm enthält
-	 */
-	void loadFile(String filePath) {
-		running = false;
-		view.clearListModel();
-		model.resetModel();
-		valueOnPowerUp();
-
-		ReloadGUI();
-
-		BufferedReader in;
-		String zeile = null;
-		model.setProgramFilePath(filePath);
-
-		try {
-			in = new BufferedReader(new FileReader(model.getProgramFilePath()));
-			try {
-				while ((zeile = in.readLine()) != null) {
-					try {
-						view.inputList.add(zeile);
-					} catch (Exception e1) {
-						System.out.println(e1);
-					}
-				}
-
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		}
-		view.setVisibilityButtons(false, true, true);
-		if (view.getListModelSize() == 0) {
-			view.setErrorMsgs("Kein Programm enthalten.");
-		}
-	}
-
-	public void writeToRegister(int adress, int value) {
-		if (adress == 1) {
-			System.out.println("Index ist 1");
-		}
-		model.setRegisterEntry(adress, value);
-		ReloadGUI();
-	}
-
-	/**
-	 * Ändert das entsprechende Bit von PortA
-	 * 
-	 * @param column
-	 *            Spalte, in der das Bit geändert werden soll
-	 */
-	void changeBitPortA(int column) {
-		switch (column) {
-		case 8: {
-			int temp = view.getValuePortA() & 0b00000001;
-			if (temp == 0) {
-				model.setPortA(model.getPortA() + 1);
-			} else {
-				model.setPortA(model.getPortA() - 1);
-			}
-			break;
-		}
-		case 7: {
-			int temp = view.getValuePortA() & 0b00000010;
-			if (temp == 0) {
-				model.setPortA(model.getPortA() + 2);
-			} else {
-				model.setPortA(model.getPortA() - 2);
-			}
-			break;
-		}
-		case 6: {
-			int temp = view.getValuePortA() & 0b00000100;
-			if (temp == 0) {
-				model.setPortA(model.getPortA() + 4);
-			} else {
-				model.setPortA(model.getPortA() - 4);
-			}
-			break;
-		}
-		case 5: {
-			int temp = view.getValuePortA() & 0b00001000;
-			if (temp == 0) {
-				model.setPortA(model.getPortA() + 8);
-			} else {
-				model.setPortA(model.getPortA() - 8);
-			}
-			break;
-		}
-		case 4: {
-			int temp = view.getValuePortA() & 0b00010000;
-			if (temp == 0) {
-				model.setPortA(model.getPortA() + 16);
-			} else {
-				model.setPortA(model.getPortA() - 16);
-			}
-			break;
-		}
-		case 3: {
-			int temp = view.getValuePortA() & 0b00100000;
-			if (temp == 0) {
-				model.setPortA(model.getPortA() + 32);
-			} else {
-				model.setPortA(model.getPortA() - 32);
-			}
-			break;
-		}
-		case 2: {
-			int temp = view.getValuePortA() & 0b01000000;
-			if (temp == 0) {
-				model.setPortA(model.getPortA() + 64);
-			} else {
-				model.setPortA(model.getPortA() - 64);
-			}
-			break;
-		}
-		case 1: {
-			int temp = view.getValuePortA() & 0b10000000;
-			if (temp == 0) {
-				model.setPortA(model.getPortA() + 128);
-			} else {
-				model.setPortA(model.getPortA() - 128);
-			}
-			break;
-		}
-		default: {
-			break;
-		}
-		}
-		model.registerArray[5] = model.getPortA();
-		ReloadGUI();
-	}
-
-	/**
-	 * Ändert das entsprechende Bit von PortB
-	 * 
-	 * @param column
-	 *            Spalte, in der das Bit geändert werden soll
-	 */
-	void changeTheRegisterFromPortB(int column) {
-		switch (column) {
-		case 8: {
-			int temp = view.getValuePortB() & 0b00000001;
-			if (temp == 0) {
-				model.setPortB(model.getPortB() + 1);
-			} else {
-				model.setPortB(model.getPortB() - 1);
-			}
-
-			model.setBit(4, 0xb);
-
-			model.doInterrupt(1);
-			break;
-		}
-		case 7: {
-			int temp = view.getValuePortB() & 0b00000010;
-			if (temp == 0) {
-				model.setPortB(model.getPortB() + 2);
-			} else {
-				model.setPortB(model.getPortB() - 2);
-			}
-			break;
-		}
-		case 6: {
-			int temp = view.getValuePortB() & 0b00000100;
-			if (temp == 0) {
-				model.setPortB(model.getPortB() + 4);
-			} else {
-				model.setPortB(model.getPortB() - 4);
-			}
-			break;
-		}
-		case 5: {
-			int temp = view.getValuePortB() & 0b00001000;
-			if (temp == 0) {
-				model.setPortB(model.getPortB() + 8);
-			} else {
-				model.setPortB(model.getPortB() - 8);
-			}
-			break;
-		}
-		case 4: {
-			int temp = view.getValuePortB() & 0b00010000;
-			if (temp == 0) {
-				model.setPortB(model.getPortB() + 16);
-			} else {
-				model.setPortB(model.getPortB() - 16);
-			}
-			model.setBit(7, 0xb);
-			model.setBit(3, 0xb);
-			model.setBit(0, 0xb);
-			model.doInterrupt(3);
-			break;
-		}
-		case 3: {
-			int temp = view.getValuePortB() & 0b00100000;
-			if (temp == 0) {
-				model.setPortB(model.getPortB() + 32);
-			} else {
-				model.setPortB(model.getPortB() - 32);
-			}
-			model.setBit(7, 0xb);
-			model.setBit(3, 0xb);
-			model.setBit(0, 0xb);
-			model.doInterrupt(3);
-			break;
-		}
-		case 2: {
-			int temp = view.getValuePortB() & 0b01000000;
-			if (temp == 0) {
-				model.setPortB(model.getPortB() + 64);
-			} else {
-				model.setPortB(model.getPortB() - 64);
-			}
-			model.setBit(7, 0xb);
-			model.setBit(3, 0xb);
-			model.setBit(0, 0xb);
-			model.doInterrupt(3);
-			break;
-		}
-		case 1: {
-			int temp = view.getValuePortB() & 0b10000000;
-			if (temp == 0) {
-				model.setPortB(model.getPortB() + 128);
-			} else {
-				model.setPortB(model.getPortB() - 128);
-			}
-			model.setBit(7, 0xb);
-			model.setBit(3, 0xb);
-			model.setBit(0, 0xb);
-			model.doInterrupt(3);
-			break;
-		}
-		default: {
-			break;
-		}
-		}
-		model.registerArray[6] = model.getPortB();
-		ReloadGUI();
-	}
-
-	/**
-	 * Setzt die aktuelle Laufzeit. Dabei wird die Differenz der aktuellen Zeit
-	 * zur Startzeit gesetzt.
-	 */
-	public void setTime() {
-		model.setRunningTime((System.currentTimeMillis()) - (model.getStartTime()));
-	}
-
-	/**
-	 * Erhöht die Anzahl der durchgeführten Schritte um 1
-	 */
-	public void countSteps() {
-		model.setSteps();
+	void valueOnPowerUp() {
+		model.setRegisterEntry(0x3, 24);
+		model.setRegisterEntry(0x81, 255);
+		model.setRegisterEntry(0x83, 24);
+		model.setRegisterEntry(0x85, 31);
+		model.setRegisterEntry(0x86, 255);
 	}
 
 	/**
@@ -932,8 +927,8 @@ public class PicSimController {
 		if (running == false) {
 			for (int i = 0; i <= 31; i++) {
 				for (int j = 0; j <= 7; j++) {
-					int adress = (i * 8 + j);
-					int value = Integer.parseInt(view.getTableEntry(i, j + 1), 16);
+					final int adress = ((i * 8) + j);
+					final int value = Integer.parseInt(view.getTableEntry(i, j + 1), 16);
 					if (model.getRegisterEntry(adress) != value) {
 						model.registerArray[adress] = value;
 						System.out.println("Adresse: " + adress + " Aktualisierter Wert: " + value);
@@ -943,5 +938,13 @@ public class PicSimController {
 		} else {
 			view.setErrorMsgs("Direkte Registeränderung nicht während der Laufzeit möglich.");
 		}
+	}
+
+	public void writeToRegister(int adress, int value) {
+		if (adress == 1) {
+			System.out.println("Index ist 1");
+		}
+		model.setRegisterEntry(adress, value);
+		ReloadGUI();
 	}
 }
