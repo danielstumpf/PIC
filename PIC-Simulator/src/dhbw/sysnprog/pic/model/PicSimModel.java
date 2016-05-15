@@ -1578,4 +1578,17 @@ public class PicSimModel {
 		setRegisterEntry(adress, (Integer.parseInt(value)));
 	}
 
+	/**
+	 * Zurücksetzen des Inhalts von RA auf den Wert 0
+	 */
+	public void resetRA() {
+		setPortA(0);
+	}
+	
+	/**
+	 * Zurücksetzen des Inhalts von RA auf den Wert 0
+	 */
+	public void resetRB() {
+		setPortB(0);
+	}
 }

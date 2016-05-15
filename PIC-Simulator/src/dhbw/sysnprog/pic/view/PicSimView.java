@@ -89,6 +89,8 @@ public class PicSimView {
 	private Table statusRegTable;
 	private Table optionsRegTable;
 	private Table intconRegTable;
+	private Button btnLatchRA;
+	private Button btnLatchRB;
 
 	public PicSimView() {
 		display = new Display();
@@ -97,8 +99,6 @@ public class PicSimView {
 		shell.setMaximized(true);
 		shell.setLayout(new FormLayout());
 		shell.setLayoutData(new FormData(100, 100));
-
-		// TODO Resize Listener
 
 		// Menü erstellen
 		createMenu();
@@ -125,7 +125,6 @@ public class PicSimView {
 		createTiming();
 
 		createStack();
-
 	}
 
 	public void addElementListModel(String value) {
@@ -305,11 +304,10 @@ public class PicSimView {
 		menuOptionsItem.setMenu(optionsMenu);
 		dataSheetItem = CreateItem.getMenuItem(optionsMenu, SWT.PUSH, "Datenblatt öffnen..");
 
-		// TODO Listener
 		dataSheetItem.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				// Datenblatt anzeigen
+				// TODO Datenblatt anzeigen
 				final Path path = Paths.get("resources", "datasheet_16f84.pdf");
 				Program.launch(path.toString());
 			}
@@ -326,9 +324,23 @@ public class PicSimView {
 		formData.right = new FormAttachment(100, -3);
 		tableComp.setLayoutData(formData);
 
+		final Label latchLabelRA = new Label(tableComp, SWT.NONE);
+		latchLabelRA.setText("Latch RA");
+		final FormData latchLabelRAData = new FormData();
+		latchLabelRAData.top = new FormAttachment(0, 3);
+		latchLabelRAData.left = new FormAttachment(0, 3);
+		latchLabelRAData.width = 150;
+		latchLabelRA.setLayoutData(latchLabelRAData);
+
+		btnLatchRA = new Button(tableComp, SWT.CHECK);
+		final FormData btnLatchRAData = new FormData();
+		btnLatchRAData.top = new FormAttachment(0, 3);
+		btnLatchRAData.left = new FormAttachment(latchLabelRA, 3);
+		btnLatchRA.setLayoutData(btnLatchRAData);
+
 		setTablePortA(new Table(tableComp, SWT.NONE));
 		final FormData tableData = new FormData();
-		tableData.top = new FormAttachment(0);
+		tableData.top = new FormAttachment(latchLabelRA, 5);
 		tableData.left = new FormAttachment(0);
 		tableData.right = new FormAttachment(100);
 		getTablePortA().setLayoutData(tableData);
@@ -365,18 +377,23 @@ public class PicSimView {
 
 		// Port B
 
-		final Composite tableCompB = new Composite(left, SWT.BORDER);
-		final FormLayout formLayoutB = new FormLayout();
-		tableCompB.setLayout(formLayoutB);
-		final FormData formDataB = new FormData();
-		formDataB.top = new FormAttachment(tableComp, 3);
-		formDataB.left = new FormAttachment(0, 3);
-		formDataB.right = new FormAttachment(100, -3);
-		tableCompB.setLayoutData(formDataB);
+		final Label latchLabelRB = new Label(tableComp, SWT.NONE);
+		latchLabelRB.setText("Latch RB");
+		final FormData latchLabelRBData = new FormData();
+		latchLabelRBData.top = new FormAttachment(getTablePortA(), 3);
+		latchLabelRBData.left = new FormAttachment(0, 3);
+		latchLabelRBData.width = 150;
+		latchLabelRB.setLayoutData(latchLabelRBData);
 
-		setTablePortB(new Table(tableCompB, SWT.NONE));
+		btnLatchRB = new Button(tableComp, SWT.CHECK);
+		final FormData btnLatchRBData = new FormData();
+		btnLatchRBData.top = new FormAttachment(getTablePortA(), 3);
+		btnLatchRBData.left = new FormAttachment(latchLabelRB, 3);
+		btnLatchRB.setLayoutData(btnLatchRBData);
+
+		setTablePortB(new Table(tableComp, SWT.NONE));
 		final FormData tableDataB = new FormData();
-		tableDataB.top = new FormAttachment(0);
+		tableDataB.top = new FormAttachment(latchLabelRB, 5);
 		tableDataB.left = new FormAttachment(0);
 		tableDataB.right = new FormAttachment(100);
 		getTablePortB().setLayoutData(tableDataB);
@@ -527,8 +544,6 @@ public class PicSimView {
 		statusRegItem.setText(3, "1");
 		statusRegItem.setText(4, "1");
 
-		// TODO StatusRegTable Listener
-
 		final Label optionRegLabel = new Label(centerDown, SWT.NONE);
 		final FormData optionRegLabelData = new FormData();
 		optionRegLabelData.top = new FormAttachment(getStatusRegTable(), 5);
@@ -591,8 +606,6 @@ public class PicSimView {
 		for (int i = 0; i < 8; i++) {
 			optionsRegItem.setText(i, "1");
 		}
-
-		// TODO optionsRegTable Listener
 
 		final Label intconRegLabel = new Label(centerDown, SWT.NONE);
 		final FormData intconRegLabelData = new FormData();
@@ -750,8 +763,6 @@ public class PicSimView {
 		buttonData.bottom = new FormAttachment(100, -3);
 		buttonData.left = new FormAttachment(0, 3);
 		setBackRuntime.setLayoutData(buttonData);
-
-		// TODO setBackRuntime Listener
 
 		laufzeitVal = new Label(groupRuntime, SWT.NONE);
 		final FormData labelFormData1 = new FormData();
@@ -923,10 +934,14 @@ public class PicSimView {
 		codeTable.setSelection(index);
 	}
 
-	public void setBreakPointButtonListener(SelectionAdapter listener) {
-
+	public boolean getLatchRA(){
+		return btnLatchRA.getSelection();
 	}
-
+	
+	public boolean getLatchRB(){
+		return btnLatchRB.getSelection();
+	}
+	
 	public void setChangeIntconRegBits(Listener l) {
 		getIntconRegTable().addListener(SWT.MouseDoubleClick, l);
 	}

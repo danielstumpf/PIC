@@ -20,6 +20,12 @@ public class PicSimController {
 	private final PicSimModel model;
 	private boolean running;
 
+	/**
+	 * Konstruktor des Controllers. Aufruf bei Programmstart.
+	 *
+	 * @param view
+	 * @param model
+	 */
 	public PicSimController(PicSimView view, PicSimModel model) {
 		this.view = view;
 		this.model = model;
@@ -644,6 +650,10 @@ public class PicSimController {
 		}
 	}
 
+	/**
+	 * Ausführen aller Funktionen, d.h. Erzeugung eines neuen Threads und
+	 * Einstieg in das Programm.
+	 */
 	public void runAllFunctions() {
 		if (view.getListModelSize() > 0) {
 
@@ -712,12 +722,21 @@ public class PicSimController {
 	}
 
 	/**
-	 * Startet das geladene Programm
+	 * Startet das geladene Programm. Vor Ausführung des nächsten Befehls wird
+	 * auf Latch-Funktion geprüft und ggf. die Werte von RA und RB auf 0
+	 * gesetzt. Vor Ausführung wird außerdem der Thread um die Dauer des taktes
+	 * pausiert.
 	 *
 	 * @param takt
 	 * @throws InterruptedException
 	 */
 	public void start_programm(int takt) throws InterruptedException {
+		if (!view.getLatchRA()) {
+			model.resetRA();
+		}
+		if (!view.getLatchRB()) {
+			model.resetRB();
+		}
 		if (model.getProgrammCounter() == model.codeList.size()) {
 			Thread.sleep(takt);
 			model.setProgramCounter(0);
@@ -761,16 +780,17 @@ public class PicSimController {
 		});
 	}
 
+	/**
+	 * Wenn Timer-Mode gesetzt ist, wird der Prescaler ausgewertet und
+	 * entsprechend des Wertes hochgezählt oder der Zähler erhöht. Je nachdem
+	 * wie der Prescaler gesetzt ist, wird bei entsprechendem Wert ein Interrupt
+	 * gesetzt.
+	 */
 	public void timerMode() {
-		if (model.checkBitSet(3, 0x81)) {
-			// model.setRegisterEntryOneBit(1, model.getRegisterEntry(1) + 1);
-
-		} else {
-			// model.setRegisterEntryOneBit(1, model.getRegisterEntry(1) + 1);
+		if (!model.checkBitSet(3, 0x81)) {
 			final int prescaler = model.registerArray[0x81] & 0b00000111;
 
 			switch (prescaler) {
-
 			case 0:
 				if (model.getPrescaler() == 1) {
 					model.setRegisterEntryOneBit(1, model.getRegisterEntry(1) + 1);
@@ -940,10 +960,15 @@ public class PicSimController {
 		}
 	}
 
+	/**
+	 * Setzt bestimmten Wert im Speicher
+	 *
+	 * @param adress
+	 *            Integerwert derSpeicheradresse
+	 * @param value
+	 *            zu setzender Wert im Speicher
+	 */
 	public void writeToRegister(int adress, int value) {
-		if (adress == 1) {
-			System.out.println("Index ist 1");
-		}
 		model.setRegisterEntry(adress, value);
 		ReloadGUI();
 	}

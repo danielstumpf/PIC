@@ -1,12 +1,22 @@
 package dhbw.sysnprog.pic.controller;
 
 public class PicSimControllerThread implements Runnable {
-	private PicSimController controller;
+	private final PicSimController controller;
 
+	/**
+	 * Konstruktor für den Thread zum Ausführen des Programms.
+	 *
+	 * @param controller
+	 */
 	public PicSimControllerThread(PicSimController controller) {
 		this.controller = controller;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see java.lang.Runnable#run()
+	 */
 	@Override
 	public void run() {
 		try {
@@ -16,7 +26,7 @@ public class PicSimControllerThread implements Runnable {
 				controller.start_programm(controller.getFrequency() / 10);
 				controller.setTime();
 			}
-		} catch (InterruptedException e) {
+		} catch (final InterruptedException e) {
 			e.printStackTrace();
 		}
 	}
