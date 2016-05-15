@@ -30,47 +30,160 @@ import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
 
+/**
+ * @author Daniel
+ *
+ */
+/**
+ * @author Daniel
+ *
+ */
+/**
+ * @author Daniel
+ *
+ */
 public class PicSimView {
+	/**
+	 * Anzahl der Spalten in der Tabelle
+	 */
 	private static final int COLUMNS = 9;
+	/**
+	 * Anzahl der Reihen in der Tabelle
+	 */
 	private static final int ROWS = 32;
+	/**
+	 * Reguläre Spaltenbreite, abhängig von der Bildschirmauflösung
+	 */
 	private static final int REG_COLUMN_WIDTH = 90;
+	/**
+	 * minimale Quarzfrequenz
+	 */
 	private static final int FREQ_MINIMUM = 10;
+	/**
+	 * maximale Quarzfrequenz
+	 */
 	private static final int FREQ_MAXIMUM = 10000;
 
+	/**
+	 * Setzt dem übergebenen TableItem alle Werte auf "00"
+	 *
+	 * @param item
+	 */
 	public static void setItemInput(TableItem item) {
 		for (int i = 1; i < COLUMNS; i++) {
 			item.setText(i, "00");
 		}
 	}
 
+	/**
+	 * Display, auf dem die Shell geöffnet wird
+	 */
 	private final Display display;
 
+	/**
+	 * Fenster, in dem der Simulator dargestellt wird
+	 */
 	private final Shell shell;
 
+	/**
+	 * MenüItem um eine Datei zu öffnen
+	 */
 	private MenuItem openFileItem;
+	/**
+	 * MenüItem um das Hilfedokument zu öffnen
+	 */
 	private MenuItem dataSheetItem;
+	/**
+	 * Composite im linken Bereich des Simulators. Hier werden Stack, RA und RB
+	 * angezeigt.
+	 */
 	private Composite left;
+	/**
+	 * Composite im rechten Bereich des Simulators. Hier wird dere gesamte
+	 * Speicher abgebildet.
+	 */
 	private Composite right;
+	/**
+	 * Composite im mittleren oberen Bereich des Simulators. Hier wird das
+	 * auszuführende Programm dargestellt.
+	 */
 	private Composite centerUp;
+	/**
+	 * Composite im unteren mittleren Bereich des Simulators. Hier werden die
+	 * verschiedenen Register visualisiert.
+	 */
 	private Composite centerDown;
+	/**
+	 * Button zum Zurücksetzen des Programmablaufs.
+	 */
 	private Button btnReset;
+	/**
+	 * Button um das Programm schrittweise weiterlaufen zu lassen.
+	 */
 	private Button btnWeiter;
+	/**
+	 * Button, um das Programm zu unterbrechen
+	 */
 	private Button btnStop;
+	/**
+	 * Button, um das Programm zu starten
+	 */
 	private Button btnRun;
-
+	/**
+	 * Breakpoint-Liste. Hier werden alle gesetzten Breakpoints gespeichert.
+	 */
 	public java.util.List<Integer> breakpointList = new ArrayList<Integer>();
+	/**
+	 * Label zur Anzeige des Wertes im Statusregister
+	 */
 	private Label statusRegHexValue;
+	/**
+	 * Label zur Anzeige des Wertes im Optionsregister
+	 */
 	private Label optionRegHexValue;
+	/**
+	 * Label zur Anzeige des Wertes im Intconregister
+	 */
 	private Label intconRegHexValue;
+	/**
+	 * Label zur Anzeige der Laufzeit
+	 */
 	private Label laufzeitVal;
+	/**
+	 * Label zur Anzeige der durchgeführten Schritte
+	 */
 	private Label stepsVal;
+	/**
+	 * Label zur Anzeige der eingestellten Quarzfrequenz
+	 */
 	private Label quarzFreqVal;
+	/**
+	 * Tabelle, in der der Programminhalt angezeigt wird.
+	 */
 	private Table codeTable;
+	/**
+	 * Tabelle, in der die Inhalte des Spezialregisters angezeigt werden.
+	 */
 	private Table specRegTable;
+	/**
+	 * Tabelle, in der die Inhalte des Port A dargestellt werden.
+	 */
 	private Table tablePortA;
+	/**
+	 * Tabelle, in der die Inhalte des Port B dargestellt werden.
+	 */
 	private Table tablePortB;
+	/**
+	 * Tabelle, in der die Inhalte des Stacks dargestellt werden.
+	 */
 	private Table stackTable;
+	/**
+	 * Tabelle, in der die Inhalte des Speichers dargestellt werden.
+	 */
 	private Table tableMem;
+	private Table statusRegTable;
+	private Table optionsRegTable;
+	private Table intconRegTable;
 	private TableItem itemRegW;
 	private TableItem itemRegFSR;
 	private TableItem itemRegPCL;
@@ -86,12 +199,12 @@ public class PicSimView {
 	private Slider slider;
 	private TableEditor editor;
 	private List<Button> checkButtonList;
-	private Table statusRegTable;
-	private Table optionsRegTable;
-	private Table intconRegTable;
 	private Button btnLatchRA;
 	private Button btnLatchRB;
 
+	/**
+	 * Konstruktor der View. Aufruf bei Programmstart
+	 */
 	public PicSimView() {
 		display = new Display();
 		shell = new Shell(display);
@@ -124,18 +237,30 @@ public class PicSimView {
 		// Quarz Frequenz Group erstellen
 		createTiming();
 
+		// Stack erstellen
 		createStack();
 	}
 
-	public void addElementListModel(String value) {
+	/**
+	 * Fügt den übergebenen String zur Input-Liste hinzu
+	 *
+	 * @param value
+	 */
+	public void addElementToList(String value) {
 		inputList.add(value);
 	}
 
-	public void clearListModel() {
+	/**
+	 * Entfernt alle Elemente aus der Code-Tabelle und aus der Input-Liste
+	 */
+	public void clearList() {
 		codeTable.removeAll();
 		inputList.clear();
 	}
 
+	/**
+	 * Erzeugt die Buttons zur Steuerung des Programms
+	 */
 	private void createButtons() {
 		final Composite buttonComposite = new Composite(centerDown, SWT.NONE);
 		buttonComposite.setLayout(new FormLayout());
@@ -179,6 +304,9 @@ public class PicSimView {
 		btnRun.setLayoutData(runBtnData);
 	}
 
+	/**
+	 * Erzeugung der Tabelle zum Anzeigen des Programminhalts
+	 */
 	private void createCodeTable() {
 		codeTable = new Table(centerUp, SWT.V_SCROLL | SWT.H_SCROLL | SWT.FULL_SELECTION);
 		final FormData codeData = new FormData();
@@ -196,6 +324,9 @@ public class PicSimView {
 		checkButtonList = new ArrayList<Button>();
 	}
 
+	/**
+	 * Erzeugung der Composites zur Aufteilung der Programminhalte
+	 */
 	private void createComposites() {
 		// Linkes Drittel Composite
 		left = new Composite(shell, SWT.BORDER);
@@ -245,6 +376,10 @@ public class PicSimView {
 		// 0, 0)));
 	}
 
+	/**
+	 * Erzeugung der Speichertabelle zum Abbilden des gesamten Speichers in der
+	 * Tabelle.
+	 */
 	private void createMemory() {
 		setTableMem(new Table(right, SWT.V_SCROLL | SWT.H_SCROLL | SWT.BORDER | SWT.FULL_SELECTION));
 		final FormData tableFormData = new FormData();
@@ -284,10 +419,13 @@ public class PicSimView {
 			item.setText(0, String.valueOf(zeileHexa).toUpperCase());
 
 			zeileDez = zeileDez + 8;
-			// setItemInput(item);
 		}
 	}
 
+	/**
+	 * Erzeugung des Menüs zum Öffnen einer Datei und zum Aufrufen des
+	 * Hilfedokuments
+	 */
 	private void createMenu() {
 		// Datei-Menüpunkt erstellen
 		final Menu menu = CreateItem.getMenu(shell, SWT.BAR | SWT.LEFT_TO_RIGHT);
@@ -314,6 +452,9 @@ public class PicSimView {
 		});
 	}
 
+	/**
+	 * Erzeugung devon PortA und PortB
+	 */
 	private void createPorts() {
 		final Composite tableComp = new Composite(left, SWT.BORDER);
 		final FormLayout formLayout = new FormLayout();
@@ -428,6 +569,9 @@ public class PicSimView {
 		editorB.grabHorizontal = true;
 	}
 
+	/**
+	 * Erzeugung Registerabbildungen
+	 */
 	private void createRegisters() {
 		// Spezialregister, Beschriftung und Tabelle erstellen
 		final Label specRegLabel = new Label(centerDown, SWT.NONE);
@@ -692,6 +836,9 @@ public class PicSimView {
 		intconRegHexValue.setLayoutData(intconLabelData);
 	}
 
+	/**
+	 * Erzeugung des Stackabbilds
+	 */
 	private void createStack() {
 		final FormData stackTableFormData = new FormData();
 		stackTableFormData.bottom = new FormAttachment(100, -5);
@@ -718,6 +865,9 @@ public class PicSimView {
 		labelStack.setText("Stack");
 	}
 
+	/**
+	 * Erzeugung der Darstellung der Zeitfunktionen
+	 */
 	private void createTiming() {
 		final Group group = new Group(centerDown, SWT.NONE);
 		group.setLayout(new FormLayout());
@@ -790,14 +940,31 @@ public class PicSimView {
 		stepsVal.setText("0");
 	}
 
+	/**
+	 *
+	 * Getter für den TabellenEditor
+	 *
+	 * @return
+	 */
 	public TableEditor getEditor() {
 		return editor;
 	}
 
-	public String getElementListModel(int i) {
+	/**
+	 * getter für den Wert in der Input-List an der Stelle i
+	 *
+	 * @param i
+	 * @return
+	 */
+	public String getElementList(int i) {
 		return inputList.get(i);
 	}
 
+	/**
+	 * Getter für den Dateipfad der auszuführenden Datei
+	 *
+	 * @return
+	 */
 	public String getFilePath() {
 		final FileDialog dialog = new FileDialog(shell);
 		final String[] extensions = { "lst" };
@@ -805,12 +972,25 @@ public class PicSimView {
 		return dialog.open();
 	}
 
+	/**
+	 * Getter für die eingestellte Quarzfrequenz des Sliders
+	 *
+	 * @return
+	 */
 	public int getFrequency() {
 		return getSlider().getSelection();
 	}
 
 	public Table getIntconRegTable() {
 		return intconRegTable;
+	}
+
+	public boolean getLatchRA() {
+		return btnLatchRA.getSelection();
+	}
+
+	public boolean getLatchRB() {
+		return btnLatchRB.getSelection();
 	}
 
 	public int getListModelSize() {
@@ -868,7 +1048,6 @@ public class PicSimView {
 		}
 		int binary = 0;
 		binary = Integer.parseInt(builder.toString(), 2);
-		System.out.println("binary: " + binary);
 		return binary;
 	}
 
@@ -879,7 +1058,6 @@ public class PicSimView {
 		}
 		int binary = 0;
 		binary = Integer.parseInt(builder.toString(), 2);
-		System.out.println("binary: " + binary);
 		return binary;
 	}
 
@@ -890,7 +1068,6 @@ public class PicSimView {
 		}
 		int binary = 0;
 		binary = Integer.parseInt(builder.toString(), 2);
-		System.out.println("binary: " + binary);
 		return binary;
 	}
 
@@ -912,7 +1089,6 @@ public class PicSimView {
 		}
 		int binary = 0;
 		binary = Integer.parseInt(builder.toString(), 2);
-		System.out.println("binary: " + binary);
 		return binary;
 	}
 
@@ -934,14 +1110,6 @@ public class PicSimView {
 		codeTable.setSelection(index);
 	}
 
-	public boolean getLatchRA(){
-		return btnLatchRA.getSelection();
-	}
-	
-	public boolean getLatchRB(){
-		return btnLatchRB.getSelection();
-	}
-	
 	public void setChangeIntconRegBits(Listener l) {
 		getIntconRegTable().addListener(SWT.MouseDoubleClick, l);
 	}
@@ -1001,7 +1169,6 @@ public class PicSimView {
 	}
 
 	public void setErrorMsgs(String string) {
-		// TODO Auto-generated method stub
 
 	}
 
@@ -1020,42 +1187,42 @@ public class PicSimView {
 
 	public void setIntconValue(int s) {
 		intconRegHexValue.setText(String.format("%02X", s));
-		if ((s & 0b00000001) == 1) {
+		if (1 == (s & 1)) {
 			intconRegItem.setText(7, "1");
 		} else {
 			intconRegItem.setText(7, "0");
 		}
-		if ((s & 0b00000010) == 2) {
+		if (2 == (s & 2)) {
 			intconRegItem.setText(6, "1");
 		} else {
 			intconRegItem.setText(6, "0");
 		}
-		if ((s & 0b00000100) == 4) {
+		if (4 == (s & 4)) {
 			intconRegItem.setText(5, "1");
 		} else {
 			intconRegItem.setText(5, "0");
 		}
-		if ((s & 0b00001000) == 8) {
+		if (8 == (s & 8)) {
 			intconRegItem.setText(4, "1");
 		} else {
 			intconRegItem.setText(4, "0");
 		}
-		if ((s & 0b00010000) == 16) {
+		if (16 == (s & 16)) {
 			intconRegItem.setText(3, "1");
 		} else {
 			intconRegItem.setText(3, "0");
 		}
-		if ((s & 0b00100000) == 32) {
+		if (32 == (s & 32)) {
 			intconRegItem.setText(2, "1");
 		} else {
 			intconRegItem.setText(2, "0");
 		}
-		if ((s & 0b01000000) == 64) {
+		if (64 == (s & 64)) {
 			intconRegItem.setText(1, "1");
 		} else {
 			intconRegItem.setText(1, "0");
 		}
-		if ((s & 0b10000000) == 128) {
+		if (128 == (s & 128)) {
 			intconRegItem.setText(0, "1");
 		} else {
 			intconRegItem.setText(0, "0");
@@ -1084,42 +1251,42 @@ public class PicSimView {
 
 	public void setOptionValue(int s) {
 		optionRegHexValue.setText(String.format("%02X", s));
-		if ((s & 0b00000001) == 1) {
+		if (1 == (s & 1)) {
 			optionsRegItem.setText(7, "1");
 		} else {
 			optionsRegItem.setText(7, "0");
 		}
-		if ((s & 0b00000010) == 2) {
+		if (2 == (s & 2)) {
 			optionsRegItem.setText(6, "1");
 		} else {
 			optionsRegItem.setText(6, "0");
 		}
-		if ((s & 0b00000100) == 4) {
+		if (4 == (s & 4)) {
 			optionsRegItem.setText(5, "1");
 		} else {
 			optionsRegItem.setText(5, "0");
 		}
-		if ((s & 0b00001000) == 8) {
+		if (8 == (s & 8)) {
 			optionsRegItem.setText(4, "1");
 		} else {
 			optionsRegItem.setText(4, "0");
 		}
-		if ((s & 0b00010000) == 16) {
+		if (16 == (s & 16)) {
 			optionsRegItem.setText(3, "1");
 		} else {
 			optionsRegItem.setText(3, "0");
 		}
-		if ((s & 0b00100000) == 32) {
+		if (32 == (s & 32)) {
 			optionsRegItem.setText(2, "1");
 		} else {
 			optionsRegItem.setText(2, "0");
 		}
-		if ((s & 0b01000000) == 64) {
+		if (64 == (s & 64)) {
 			optionsRegItem.setText(1, "1");
 		} else {
 			optionsRegItem.setText(1, "0");
 		}
-		if ((s & 0b10000000) == 128) {
+		if (128 == (s & 128)) {
 			optionsRegItem.setText(0, "1");
 		} else {
 			optionsRegItem.setText(0, "0");
@@ -1139,51 +1306,42 @@ public class PicSimView {
 	}
 
 	public void setPortALabels(int t) {
-		final int a = t & 0b00000001;
-		final int b = t & 0b00000010;
-		final int c = t & 0b00000100;
-		final int d = t & 0b00001000;
-		final int e = t & 0b00010000;
-		final int f = t & 0b00100000;
-		final int g = t & 0b01000000;
-		final int h = t & 0b10000000;
-
-		if (a > 0) {
+		if (1 == (t & 1)) {
 			portAPinItem.setText(8, "1");
 		} else {
 			portAPinItem.setText(8, "0");
 		}
-		if (b > 0) {
+		if (2 == (t & 2)) {
 			portAPinItem.setText(7, "1");
 		} else {
 			portAPinItem.setText(7, "0");
 		}
-		if (c > 0) {
+		if (4 == (t & 4)) {
 			portAPinItem.setText(6, "1");
 		} else {
 			portAPinItem.setText(6, "0");
 		}
-		if (d > 0) {
+		if (4 == (t & 4)) {
 			portAPinItem.setText(5, "1");
 		} else {
 			portAPinItem.setText(5, "0");
 		}
-		if (e > 0) {
+		if (8 == (t & 8)) {
 			portAPinItem.setText(4, "1");
 		} else {
 			portAPinItem.setText(4, "0");
 		}
-		if (f > 0) {
+		if (16 == (t & 16)) {
 			portAPinItem.setText(3, "1");
 		} else {
 			portAPinItem.setText(3, "0");
 		}
-		if (g > 0) {
+		if (32 == (t & 32)) {
 			portAPinItem.setText(2, "1");
 		} else {
 			portAPinItem.setText(2, "0");
 		}
-		if (h > 0) {
+		if (128 == (t & 128)) {
 			portAPinItem.setText(1, "1");
 		} else {
 			portAPinItem.setText(1, "0");
@@ -1191,51 +1349,42 @@ public class PicSimView {
 	}
 
 	public void setPortBLabels(int t) {
-		final int a = t & 0b00000001;
-		final int b = t & 0b00000010;
-		final int c = t & 0b00000100;
-		final int d = t & 0b00001000;
-		final int e = t & 0b00010000;
-		final int f = t & 0b00100000;
-		final int g = t & 0b01000000;
-		final int h = t & 0b10000000;
-
-		if (a > 0) {
+		if (1 == (t & 1)) {
 			portBPinItem.setText(8, "1");
 		} else {
 			portBPinItem.setText(8, "0");
 		}
-		if (b > 0) {
+		if (2 == (t & 2)) {
 			portBPinItem.setText(7, "1");
 		} else {
 			portBPinItem.setText(7, "0");
 		}
-		if (c > 0) {
+		if (4 == (t & 4)) {
 			portBPinItem.setText(6, "1");
 		} else {
 			portBPinItem.setText(6, "0");
 		}
-		if (d > 0) {
+		if (8 == (t & 8)) {
 			portBPinItem.setText(5, "1");
 		} else {
 			portBPinItem.setText(5, "0");
 		}
-		if (e > 0) {
+		if (16 == (t & 16)) {
 			portBPinItem.setText(4, "1");
 		} else {
 			portBPinItem.setText(4, "0");
 		}
-		if (f > 0) {
+		if (32 == (t & 32)) {
 			portBPinItem.setText(3, "1");
 		} else {
 			portBPinItem.setText(3, "0");
 		}
-		if (g > 0) {
+		if (64 == (t & 64)) {
 			portBPinItem.setText(2, "1");
 		} else {
 			portBPinItem.setText(2, "0");
 		}
-		if (h > 0) {
+		if (128 == (t & 128)) {
 			portBPinItem.setText(1, "1");
 		} else {
 			portBPinItem.setText(1, "0");
@@ -1277,49 +1426,49 @@ public class PicSimView {
 	public void setStatusValue(int s) {
 		statusRegHexValue.setText(String.format("%02X", s));
 		// C-Bit
-		if ((s & 0b00000001) == 1) {
+		if (1 == (s & 1)) {
 			statusRegItem.setText(7, "1");
 		} else {
 			statusRegItem.setText(7, "0");
 		}
 		// DC-Bit
-		if ((s & 0b00000010) == 2) {
+		if (2 == (s & 2)) {
 			statusRegItem.setText(6, "1");
 		} else {
 			statusRegItem.setText(6, "0");
 		}
 		// Z-Bit
-		if ((s & 0b00000100) == 4) {
+		if (4 == (s & 4)) {
 			statusRegItem.setText(5, "1");
 		} else {
 			statusRegItem.setText(5, "0");
 		}
 		// PD-Bit
-		if ((s & 0b00001000) == 8) {
+		if (8 == (s & 8)) {
 			statusRegItem.setText(4, "1");
 		} else {
 			statusRegItem.setText(4, "0");
 		}
 		// T0-Bit
-		if ((s & 0b00010000) == 16) {
+		if (16 == (s & 16)) {
 			statusRegItem.setText(3, "1");
 		} else {
 			statusRegItem.setText(3, "0");
 		}
 		// RP0-Bit
-		if ((s & 0b00100000) == 32) {
+		if (32 == (s & 32)) {
 			statusRegItem.setText(2, "1");
 		} else {
 			statusRegItem.setText(2, "0");
 		}
 		// RP1-Bit
-		if ((s & 0b01000000) == 64) {
+		if (64 == (s & 64)) {
 			statusRegItem.setText(1, "1");
 		} else {
 			statusRegItem.setText(1, "0");
 		}
 		// IRP-Bit
-		if ((s & 0b10000000) == 128) {
+		if (128 == (s & 128)) {
 			statusRegItem.setText(0, "1");
 		} else {
 			statusRegItem.setText(0, "0");
@@ -1347,51 +1496,42 @@ public class PicSimView {
 	}
 
 	public void setTrisALabels(int t) {
-		final int a = t & 0b00000001;
-		final int b = t & 0b00000010;
-		final int c = t & 0b00000100;
-		final int d = t & 0b00001000;
-		final int e = t & 0b00010000;
-		final int f = t & 0b00100000;
-		final int g = t & 0b01000000;
-		final int h = t & 0b10000000;
-
-		if (a > 0) {
+		if (1 == (t & 1)) {
 			portATrisItem.setText(8, "i");
 		} else {
 			portATrisItem.setText(8, "o");
 		}
-		if (b > 0) {
+		if (2 == (t & 2)) {
 			portATrisItem.setText(7, "i");
 		} else {
 			portATrisItem.setText(7, "o");
 		}
-		if (c > 0) {
+		if (4 == (t & 4)) {
 			portATrisItem.setText(6, "i");
 		} else {
 			portATrisItem.setText(6, "o");
 		}
-		if (d > 0) {
+		if (8 == (t & 8)) {
 			portATrisItem.setText(5, "i");
 		} else {
 			portATrisItem.setText(5, "o");
 		}
-		if (e > 0) {
+		if (16 == (t & 16)) {
 			portATrisItem.setText(4, "i");
 		} else {
 			portATrisItem.setText(4, "o");
 		}
-		if (f > 0) {
+		if (32 == (t & 32)) {
 			portATrisItem.setText(3, "i");
 		} else {
 			portATrisItem.setText(3, "o");
 		}
-		if (g > 0) {
+		if (64 == (t & 64)) {
 			portATrisItem.setText(2, "i");
 		} else {
 			portATrisItem.setText(2, "o");
 		}
-		if (h > 0) {
+		if (128 == (t & 128)) {
 			portATrisItem.setText(1, "i");
 		} else {
 			portATrisItem.setText(1, "o");
@@ -1399,51 +1539,42 @@ public class PicSimView {
 	}
 
 	public void setTrisBLabels(int t) {
-		final int a = t & 0b00000001;
-		final int b = t & 0b00000010;
-		final int c = t & 0b00000100;
-		final int d = t & 0b00001000;
-		final int e = t & 0b00010000;
-		final int f = t & 0b00100000;
-		final int g = t & 0b01000000;
-		final int h = t & 0b10000000;
-
-		if (a > 0) {
+		if (1 == (t & 1)) {
 			portBTrisItem.setText(8, "i");
 		} else {
 			portBTrisItem.setText(8, "o");
 		}
-		if (b > 0) {
+		if (2 == (t & 2)) {
 			portBTrisItem.setText(7, "i");
 		} else {
 			portBTrisItem.setText(7, "o");
 		}
-		if (c > 0) {
+		if (4 == (t & 4)) {
 			portBTrisItem.setText(6, "i");
 		} else {
 			portBTrisItem.setText(6, "o");
 		}
-		if (d > 0) {
+		if (8 == (t & 8)) {
 			portBTrisItem.setText(5, "i");
 		} else {
 			portBTrisItem.setText(5, "o");
 		}
-		if (e > 0) {
+		if (16 == (t & 16)) {
 			portBTrisItem.setText(4, "i");
 		} else {
 			portBTrisItem.setText(4, "o");
 		}
-		if (f > 0) {
+		if (32 == (t & 32)) {
 			portBTrisItem.setText(3, "i");
 		} else {
 			portBTrisItem.setText(3, "o");
 		}
-		if (g > 0) {
+		if (64 == (t & 64)) {
 			portBTrisItem.setText(2, "i");
 		} else {
 			portBTrisItem.setText(2, "o");
 		}
-		if (h > 0) {
+		if (128 == (t & 128)) {
 			portBTrisItem.setText(1, "i");
 		} else {
 			portBTrisItem.setText(1, "o");

@@ -522,7 +522,7 @@ public class PicSimController {
 	 */
 	public void filterCode() {
 		for (int i = 0; i < view.getListModelSize(); i++) {
-			final String temp = view.getElementListModel(i);
+			final String temp = view.getElementList(i);
 			if (temp.startsWith("     ")) {
 				view.remove_ElementListModel(i);
 				i--;
@@ -552,7 +552,7 @@ public class PicSimController {
 	 */
 	void loadFile(String filePath) {
 		running = false;
-		view.clearListModel();
+		view.clearList();
 		model.resetModel();
 		valueOnPowerUp();
 
@@ -717,7 +717,7 @@ public class PicSimController {
 	 */
 	private void start() {
 		for (int i = 0; i < view.getListModelSize(); i++) {
-			model.checkCode(view.getElementListModel(i));
+			model.checkCode(view.getElementList(i));
 		}
 	}
 

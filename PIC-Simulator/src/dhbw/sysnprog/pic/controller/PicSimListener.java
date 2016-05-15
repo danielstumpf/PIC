@@ -15,22 +15,36 @@ import dhbw.sysnprog.pic.model.PicSimModel;
 import dhbw.sysnprog.pic.view.PicSimView;
 
 public class PicSimListener {
-	
-	private PicSimController controller;
-	private PicSimView view;
-	private PicSimModel model;
 
+	private final PicSimController controller;
+	private final PicSimView view;
+	private final PicSimModel model;
+
+	/**
+	 * Konstruktor zur Erzeugung der Listener-Klasse. Hier wird die
+	 * addListener() Methode aufgerufen, um die Listener der GUI hinzuzufügen.
+	 *
+	 * @param controller
+	 * @param view
+	 * @param model
+	 */
 	public PicSimListener(PicSimController controller, PicSimView view, PicSimModel model) {
 
 		this.controller = controller;
 		this.view = view;
 		this.model = model;
-		
+
 		addListener();
 	}
 
+	/**
+	 * Extrahierte Methode zum Setzen der Listener für die GUI. Hier werden die
+	 * verschiedenen Listener erzeugt und der View übergeben, damit eine
+	 * Trennung zwischen View und Controller eingehalten wird.
+	 */
 	private void addListener() {
 		view.setResetListener(new SelectionAdapter() {
+			@Override
 			public void widgetSelected(SelectionEvent e) {
 				model.resetModel();
 				controller.valueOnPowerUp();
@@ -39,26 +53,30 @@ public class PicSimListener {
 		});
 
 		view.setNextStepListener(new SelectionAdapter() {
+			@Override
 			public void widgetSelected(SelectionEvent e) {
 				controller.runOneFunction();
 			}
 		});
 		view.setStartProgramListener(new SelectionAdapter() {
+			@Override
 			public void widgetSelected(SelectionEvent e) {
 				controller.runAllFunctions();
 			}
 		});
 		view.setPauseListener(new SelectionAdapter() {
+			@Override
 			public void widgetSelected(SelectionEvent e) {
 				controller.setRunning(false);
 			}
 		});
 		view.setOpenFileListener(new SelectionAdapter() {
+			@Override
 			public void widgetSelected(SelectionEvent e) {
-				String[] extensions = { "*.lst" };
-				FileDialog dialog = new FileDialog(view.getShell());
+				final String[] extensions = { "*.lst" };
+				final FileDialog dialog = new FileDialog(view.getShell());
 				dialog.setFilterExtensions(extensions);
-				String filePath = dialog.open();
+				final String filePath = dialog.open();
 				controller.loadFile(filePath);
 				controller.filterCode();
 				view.setCodeInput();
@@ -74,18 +92,20 @@ public class PicSimListener {
 		});
 
 		view.setSpecRegListener(new Listener() {
+			@Override
 			public void handleEvent(Event event) {
-				Rectangle clientArea = view.getSpecRegTable().getClientArea();
-				Point pt = new Point(event.x, event.y);
+				final Rectangle clientArea = view.getSpecRegTable().getClientArea();
+				final Point pt = new Point(event.x, event.y);
 				int index = view.getTableMem().getTopIndex();
 				while (index < view.getSpecRegTable().getItemCount()) {
 					boolean visible = false;
 					final TableItem item = view.getSpecRegTable().getItem(index);
 					final int column = 1;
-					Rectangle rect = item.getBounds(column);
+					final Rectangle rect = item.getBounds(column);
 					if (rect.contains(pt)) {
 						final Text text = new Text(view.getSpecRegTable(), SWT.NONE);
-						Listener listener = new Listener() {
+						final Listener listener = new Listener() {
+							@Override
 							public void handleEvent(final Event e) {
 								switch (e.type) {
 								case SWT.FocusOut:
@@ -120,76 +140,81 @@ public class PicSimListener {
 					if (!visible && rect.intersects(clientArea)) {
 						visible = true;
 					}
-					if (!visible)
+					if (!visible) {
 						return;
+					}
 					index++;
 				}
 			}
 		});
 
 		view.setChangeStatusRegBits(new Listener() {
+			@Override
 			public void handleEvent(Event event) {
-				Point pt = new Point(event.x, event.y);
+				final Point pt = new Point(event.x, event.y);
 				final TableItem item = view.getStatusRegTable().getItem(0);
 				for (int i = 0; i < view.getStatusRegTable().getColumnCount(); i++) {
-					Rectangle rect = item.getBounds(i);
+					final Rectangle rect = item.getBounds(i);
 					if (rect.contains(pt)) {
-						final int column = i+1;
+						final int column = i + 1;
 						controller.changeBitStatusReg(column);
 					}
 				}
 			}
-		});		
-		
+		});
+
 		view.setChangeOptionRegBits(new Listener() {
+			@Override
 			public void handleEvent(Event event) {
-				Point pt = new Point(event.x, event.y);
+				final Point pt = new Point(event.x, event.y);
 				final TableItem item = view.getOptionsRegTable().getItem(0);
 				for (int i = 0; i < view.getOptionsRegTable().getColumnCount(); i++) {
-					Rectangle rect = item.getBounds(i);
+					final Rectangle rect = item.getBounds(i);
 					if (rect.contains(pt)) {
-						final int column = i+1;
+						final int column = i + 1;
 						controller.changeBitOptionReg(column);
 					}
 				}
 			}
-		});		
-		
+		});
+
 		view.setChangeIntconRegBits(new Listener() {
+			@Override
 			public void handleEvent(Event event) {
-				Point pt = new Point(event.x, event.y);
+				final Point pt = new Point(event.x, event.y);
 				final TableItem item = view.getIntconRegTable().getItem(0);
 				for (int i = 0; i < view.getIntconRegTable().getColumnCount(); i++) {
-					Rectangle rect = item.getBounds(i);
+					final Rectangle rect = item.getBounds(i);
 					if (rect.contains(pt)) {
-						final int column = i+1;
+						final int column = i + 1;
 						controller.changeBitIntconReg(column);
 					}
 				}
 			}
-		});		
-		
-		
+		});
+
 		view.setChangePortABits(new Listener() {
+			@Override
 			public void handleEvent(Event event) {
-				Point pt = new Point(event.x, event.y);
+				final Point pt = new Point(event.x, event.y);
 				final TableItem item = view.getTablePortA().getItem(1);
 				for (int i = 1; i < view.getTablePortA().getColumnCount(); i++) {
-					Rectangle rect = item.getBounds(i);
+					final Rectangle rect = item.getBounds(i);
 					if (rect.contains(pt)) {
 						final int column = i;
 						controller.changeBitPortA(column);
 					}
 				}
 			}
-		});		
+		});
 
 		view.setChangePortBBits(new Listener() {
+			@Override
 			public void handleEvent(Event event) {
-				Point pt = new Point(event.x, event.y);
+				final Point pt = new Point(event.x, event.y);
 				final TableItem item = view.getTablePortB().getItem(1);
 				for (int i = 1; i < view.getTablePortB().getColumnCount(); i++) {
-					Rectangle rect = item.getBounds(i);
+					final Rectangle rect = item.getBounds(i);
 					if (rect.contains(pt)) {
 						final int column = i;
 						controller.changeTheRegisterFromPortB(column);
@@ -199,19 +224,21 @@ public class PicSimListener {
 		});
 
 		view.setMemoryListener(new Listener() {
+			@Override
 			public void handleEvent(Event event) {
-				Rectangle clientArea = view.getTableMem().getClientArea();
-				Point pt = new Point(event.x, event.y);
+				final Rectangle clientArea = view.getTableMem().getClientArea();
+				final Point pt = new Point(event.x, event.y);
 				int index = view.getTableMem().getTopIndex();
 				while (index < view.getTableMem().getItemCount()) {
 					boolean visible = false;
 					final TableItem item = view.getTableMem().getItem(index);
 					for (int i = 1; i < view.getTableMem().getColumnCount(); i++) {
-						Rectangle rect = item.getBounds(i);
+						final Rectangle rect = item.getBounds(i);
 						if (rect.contains(pt)) {
 							final int column = i;
 							final Text text = new Text(view.getTableMem(), SWT.NONE);
-							Listener textListener = new Listener() {
+							final Listener textListener = new Listener() {
+								@Override
 								public void handleEvent(final Event e) {
 									switch (e.type) {
 									case SWT.FocusOut:
@@ -247,8 +274,9 @@ public class PicSimListener {
 							visible = true;
 						}
 					}
-					if (!visible)
+					if (!visible) {
 						return;
+					}
 					index++;
 				}
 			}
