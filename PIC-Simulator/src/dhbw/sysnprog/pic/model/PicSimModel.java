@@ -6,10 +6,11 @@ import java.util.Deque;
 import java.util.List;
 
 /**
+ * Model des PIC-Simulator. Führt sämtliche Funktionen des Simulators durch,
+ * unabhängig von der Benutzeroberfläche
+ *
  * @author Daniel
  *
- *         Model des PIC-Simulator. Führt sämtliche Funktionen des Simulators
- *         durch, unabhängig von der Benutzeroberfläche
  *
  */
 public class PicSimModel {
@@ -234,9 +235,10 @@ public class PicSimModel {
 	 */
 	private void do_addlw(int lit_K) {
 		final int lit_K_temp = lit_K & 0b011111111;
-		final int value = lit_K_temp + registerW;
+		int value = lit_K_temp + registerW;
 		if (value > 255) {
 			setC(true);
+			value = value & 0xFF;
 		} else {
 			setC(false);
 		}
@@ -924,7 +926,7 @@ public class PicSimModel {
 	public void doAction(int code) throws InterruptedException {
 		final int codeTmp = code;
 
-		final int hex16 = codeTmp & 0b1111111111111111;
+		final int hex16 = codeTmp & 0xFFFF;
 		switch (hex16) {
 		case 100:
 			do_clrwdt();
@@ -940,8 +942,8 @@ public class PicSimModel {
 			break;
 		}
 
-		final int hex10 = codeTmp & 0b1111110000000000;
-		final int _hex10 = codeTmp & 0b0000001111111111;
+		final int hex10 = codeTmp & 0xFC00;
+		final int _hex10 = codeTmp & 0x03FF;
 		switch (hex10) {
 		case 4096:
 			do_bcf(_hex10);
@@ -963,8 +965,8 @@ public class PicSimModel {
 			break;
 		}
 
-		final int hex9 = codeTmp & 0b1111111110000000;
-		final int _hex9 = codeTmp & 0b0000000001111111;
+		final int hex9 = codeTmp & 0xFF80;
+		final int _hex9 = codeTmp & 0x007F;
 		switch (hex9) {
 		case 384:
 			do_clrf(_hex9);
@@ -980,8 +982,8 @@ public class PicSimModel {
 			break;
 		}
 
-		final int hex8 = codeTmp & 0b1111111100000000;
-		final int _hex8 = codeTmp & 0b0000000011111111;
+		final int hex8 = codeTmp & 0xFF00;
+		final int _hex8 = codeTmp & 0x00FF;
 		switch (hex8) {
 		case 1792:
 			do_addwf(_hex8);
@@ -1037,8 +1039,8 @@ public class PicSimModel {
 
 		}
 
-		final int hex7 = codeTmp & 0b1111111000000000;
-		final int _hex7 = codeTmp & 0b0000000111111111;
+		final int hex7 = codeTmp & 0xFE00;
+		final int _hex7 = codeTmp & 0x01FF;
 		switch (hex7) {
 		case 15872:
 			do_addlw(_hex7);
@@ -1048,8 +1050,8 @@ public class PicSimModel {
 			break;
 		}
 
-		final int hex5 = codeTmp & 0b1111100000000000;
-		final int _hex5 = codeTmp & 0b0000011111111111;
+		final int hex5 = codeTmp & 0xF800;
+		final int _hex5 = codeTmp & 0x07FF;
 		switch (hex5) {
 		case 8192:
 			do_call(_hex5);
@@ -1275,6 +1277,20 @@ public class PicSimModel {
 		takt = 4000;
 		steps = 0;
 		runningTime = 0;
+	}
+
+	/**
+	 * Zurücksetzen des Inhalts von RA auf den Wert 0
+	 */
+	public void resetRA() {
+		setPortA(0);
+	}
+
+	/**
+	 * Zurücksetzen des Inhalts von RA auf den Wert 0
+	 */
+	public void resetRB() {
+		setPortB(0);
 	}
 
 	/**
@@ -1576,19 +1592,5 @@ public class PicSimModel {
 	public void writeToRegister(int xColumn, int yRow, String value) {
 		final int adress = (yRow * 8) + xColumn + 1;
 		setRegisterEntry(adress, (Integer.parseInt(value)));
-	}
-
-	/**
-	 * Zurücksetzen des Inhalts von RA auf den Wert 0
-	 */
-	public void resetRA() {
-		setPortA(0);
-	}
-	
-	/**
-	 * Zurücksetzen des Inhalts von RA auf den Wert 0
-	 */
-	public void resetRB() {
-		setPortB(0);
 	}
 }
