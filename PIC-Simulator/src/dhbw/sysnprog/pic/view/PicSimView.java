@@ -440,13 +440,12 @@ public class PicSimView {
 		final MenuItem menuOptionsItem = CreateItem.getMenuItem(menu, SWT.CASCADE, "Optionen");
 		final Menu optionsMenu = CreateItem.getMenu(shell, SWT.DROP_DOWN);
 		menuOptionsItem.setMenu(optionsMenu);
-		dataSheetItem = CreateItem.getMenuItem(optionsMenu, SWT.PUSH, "Datenblatt öffnen..");
+		dataSheetItem = CreateItem.getMenuItem(optionsMenu, SWT.PUSH, "Dokumentation öffnen..");
 
 		dataSheetItem.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				// TODO Datenblatt anzeigen
-				final Path path = Paths.get("resources", "datasheet_16f84.pdf");
+				final Path path = Paths.get("resources", "documentation.pdf");
 				Program.launch(path.toString());
 			}
 		});
