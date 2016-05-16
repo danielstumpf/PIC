@@ -731,12 +731,18 @@ public class PicSimController {
 	 * @throws InterruptedException
 	 */
 	public void start_programm(int takt) throws InterruptedException {
-		if (!view.getLatchRA()) {
-			model.resetRA();
-		}
-		if (!view.getLatchRB()) {
-			model.resetRB();
-		}
+		Display.getDefault().syncExec(new Runnable() {
+			@Override
+			public void run() {
+				if (!view.getLatchRA()) {
+					model.resetRA();
+				}
+				if (!view.getLatchRB()) {
+					model.resetRB();
+				}
+			}
+		});
+
 		if (model.getProgrammCounter() == model.codeList.size()) {
 			Thread.sleep(takt);
 			model.setProgramCounter(0);
